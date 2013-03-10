@@ -13,7 +13,6 @@ public class CS5300PROJ2RPCServer implements Runnable{
 	public synchronized void run() {
 		while(true) {
 			//TODO RPC server code.
-			// Sweet writing stuff
 		}
 	}
 }
