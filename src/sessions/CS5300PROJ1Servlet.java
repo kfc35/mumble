@@ -34,6 +34,9 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 	public static final long EXPIRY_TIME_FROM_CURRENT = 1000 * 120; //2 minutes 
 	private Thread terminator = new Thread(new CS5300PROJ1Terminator(sessionDataTable));
+	private CS5300PROJ2RPCServer rpcServerObj = new CS5300PROJ2RPCServer(sessionDataTable);
+	private Thread rpcServer = new Thread(rpcServerObj);
+	private CS5300PROJ2IPP myIPP;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -41,6 +44,8 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	public CS5300PROJ1Servlet() {
 		super();
 		terminator.start();
+		rpcServer.start();
+		myIPP = new CS5300PROJ2IPP(rpcServerObj.getAddress(), rpcServerObj.getPort());
 	}
 
 	/**
