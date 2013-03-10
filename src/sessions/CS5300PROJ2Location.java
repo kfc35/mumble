@@ -1,57 +1,37 @@
 package sessions;
 
 public class CS5300PROJ2Location {
-	private String primaryIP;
-	private String primaryPort;
-	private String backupIP;
-	private String backupPort;
+	private CS5300PROJ2IPP primaryIPP;
+	private CS5300PROJ2IPP backupIPP;
 	
-	public CS5300PROJ2Location(String pIP, String pPort, String bIP, String bPort) {
-		primaryIP = pIP;
-		primaryPort = pPort;
-		backupIP = bIP;
-		backupPort = bPort;
+	public CS5300PROJ2Location(CS5300PROJ2IPP primaryIPP,
+			CS5300PROJ2IPP backupIPP) {
+		super();
+		this.primaryIPP = primaryIPP;
+		this.backupIPP = backupIPP;
 	}
 
-	public String getPrimaryIP() {
-		return primaryIP;
+	public CS5300PROJ2IPP getPrimaryIPP() {
+		return primaryIPP;
 	}
 
-	public void setPrimaryIP(String primaryIP) {
-		this.primaryIP = primaryIP;
+	public void setPrimaryIPP(CS5300PROJ2IPP primaryIPP) {
+		this.primaryIPP = primaryIPP;
 	}
 
-	public String getPrimaryPort() {
-		return primaryPort;
+	public CS5300PROJ2IPP getBackupIPP() {
+		return backupIPP;
 	}
 
-	public void setPrimaryPort(String primaryPort) {
-		this.primaryPort = primaryPort;
-	}
-
-	public String getBackupIP() {
-		return backupIP;
-	}
-
-	public void setBackupIP(String backupIP) {
-		this.backupIP = backupIP;
-	}
-
-	public String getBackupPort() {
-		return backupPort;
-	}
-
-	public void setBackupPort(String backupPort) {
-		this.backupPort = backupPort;
+	public void setBackupIPP(CS5300PROJ2IPP backupIPP) {
+		this.backupIPP = backupIPP;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(primaryIP).append("_");
-		sb.append(primaryPort).append("_");
-		sb.append(backupIP).append("_");
-		sb.append(backupPort);
+		sb.append(primaryIPP.toString()).append("_");
+		sb.append(backupIPP.toString());
 		return sb.toString();
 	}
 	

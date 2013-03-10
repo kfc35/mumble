@@ -3,15 +3,14 @@ package sessions;
 public class CS5300PROJ2SessionId {
 	
 	private String sessionId;
-	private String originIP;
-	private String originPort; //UDP port
+	private CS5300PROJ2IPP originIPP;
 	
-	public CS5300PROJ2SessionId(String sId, String oIP, String oPort) {
-		sessionId = sId;
-		originIP = oIP;
-		originPort = oPort;
+	public CS5300PROJ2SessionId(String sessionId, CS5300PROJ2IPP originIPP) {
+		super();
+		this.sessionId = sessionId;
+		this.originIPP = originIPP;
 	}
-
+	
 	public String getSessionId() {
 		return sessionId;
 	}
@@ -20,28 +19,19 @@ public class CS5300PROJ2SessionId {
 		this.sessionId = sessionId;
 	}
 
-	public String getOriginIP() {
-		return originIP;
+	public CS5300PROJ2IPP getOriginIPP() {
+		return originIPP;
 	}
 
-	public void setOriginIP(String originIP) {
-		this.originIP = originIP;
-	}
-
-	public String getOriginPort() {
-		return originPort;
-	}
-
-	public void setOriginPort(String originPort) {
-		this.originPort = originPort;
+	public void setOriginIPP(CS5300PROJ2IPP originIPP) {
+		this.originIPP = originIPP;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(sessionId).append("_");
-		sb.append(originIP).append("_");
-		sb.append(originPort);
+		sb.append(originIPP.toString());
 		return sb.toString();
 	}
 	
