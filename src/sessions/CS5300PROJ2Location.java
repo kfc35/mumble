@@ -1,0 +1,38 @@
+package sessions;
+
+public class CS5300PROJ2Location {
+	private CS5300PROJ2IPP primaryIPP;
+	private CS5300PROJ2IPP backupIPP;
+	
+	public CS5300PROJ2Location(CS5300PROJ2IPP primaryIPP,
+			CS5300PROJ2IPP backupIPP) {
+		super();
+		this.primaryIPP = primaryIPP;
+		this.backupIPP = backupIPP;
+	}
+
+	public CS5300PROJ2IPP getPrimaryIPP() {
+		return primaryIPP;
+	}
+
+	public void setPrimaryIPP(CS5300PROJ2IPP primaryIPP) {
+		this.primaryIPP = primaryIPP;
+	}
+
+	public CS5300PROJ2IPP getBackupIPP() {
+		return backupIPP;
+	}
+
+	public void setBackupIPP(CS5300PROJ2IPP backupIPP) {
+		this.backupIPP = backupIPP;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(primaryIPP.toString()).append("_");
+		sb.append(backupIPP.toString());
+		return sb.toString();
+	}
+	
+}

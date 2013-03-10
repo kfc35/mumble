@@ -1,0 +1,6 @@
+*classpath*
+.settings/*
+build/*
+bin/*
+README~
+README.md~
