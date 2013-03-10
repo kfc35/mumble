@@ -31,18 +31,23 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	private static final String DEFAULT_MESSAGE = "Hello, User!";
 	private ConcurrentHashMap<String, CS5300PROJ1Session> sessionDataTable = 
 			new ConcurrentHashMap<String, CS5300PROJ1Session>();
+	private ConcurrentHashMap<CS5300PROJ2IPP, Integer> memberSet = 
+			new ConcurrentHashMap<CS5300PROJ2IPP, Integer>();
 
 	public static final long EXPIRY_TIME_FROM_CURRENT = 1000 * 120; //2 minutes 
 	private Thread terminator = new Thread(new CS5300PROJ1Terminator(sessionDataTable));
-	private CS5300PROJ2RPCServer rpcServerObj = new CS5300PROJ2RPCServer(sessionDataTable);
+	private CS5300PROJ2RPCServer rpcServerObj = new CS5300PROJ2RPCServer(sessionDataTable, memberSet);
 	private Thread rpcServer = new Thread(rpcServerObj);
+	private int numMessagesSent;
 	private CS5300PROJ2IPP myIPP;
+	
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public CS5300PROJ1Servlet() {
 		super();
+		numMessagesSent = Integer.parseInt(rpcServerObj.getPort()) * 10000;
 		terminator.start();
 		rpcServer.start();
 		myIPP = new CS5300PROJ2IPP(rpcServerObj.getAddress(), rpcServerObj.getPort());
