@@ -1,0 +1,8 @@
+.project
+.classpath
+.settings/*
+build/*
+bin/*
+*.class
+src/AwsCredentials.properties
+WebContent/WEB-INF/classes/AwsCredentials.properties
