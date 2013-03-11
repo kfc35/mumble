@@ -1,7 +1,1 @@
-.classpath*
-.settings/*
-build/*
-README~
-README.md~
-bin/*
-src/AwsCredentials.properties
+.project
