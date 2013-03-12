@@ -36,4 +36,12 @@ public class CS5300PROJ2IPP {
 		sb.append(port);
 		return sb.toString();
 	}
+	
+	public boolean equals(Object o) {
+		if (o instanceof CS5300PROJ2IPP) {
+			CS5300PROJ2IPP ipp = (CS5300PROJ2IPP) o;
+			return IP.equals(ipp.getIP()) && port.equals(ipp.getPort());
+		}
+		return false;
+	}
 }

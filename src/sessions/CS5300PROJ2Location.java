@@ -56,5 +56,17 @@ public class CS5300PROJ2Location {
 		}
 		return sb.toString();
 	}
+	
+	public boolean equalsPrimary(CS5300PROJ2IPP o) {
+		return primaryIPP.equals(o);
+	}
+	
+	public boolean equalsBackup(CS5300PROJ2IPP o) {
+		return backupIPP != null && backupIPP.equals(o);
+	}
+	
+	public boolean equalsEither(CS5300PROJ2IPP o) {
+		return equalsPrimary(o) || equalsBackup(o);
+	}
 
 }

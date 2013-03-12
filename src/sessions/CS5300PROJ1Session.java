@@ -80,10 +80,6 @@ public class CS5300PROJ1Session {
 	public void incrementVersion() {
 		cookie.incrementVersion();
 	}
-	
-	public String getLocations() {
-		return cookie.getIpp().toString();
-	}
 
 	/**
 	 * This is what it should look like:

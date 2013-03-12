@@ -10,7 +10,7 @@ public class CS5300PROJ2RPCMessage {
 	
 	private TYPE type;
 	private OPT opt;
-	private double callID;
+	private int callID;
 	private CS5300PROJ2SessionId sessionID;
 	private int version; // -1 for not found, 1 for acknowledgment in Write/Delete return
 	private CS5300PROJ1Session session;
@@ -23,7 +23,7 @@ public class CS5300PROJ2RPCMessage {
 	 * 
 	 * Generic for all types of messages 
 	 */
-	public CS5300PROJ2RPCMessage(TYPE t, OPT o, double cID, CS5300PROJ2SessionId sID, int v, 
+	public CS5300PROJ2RPCMessage(TYPE t, OPT o, int cID, CS5300PROJ2SessionId sID, int v, 
 			CS5300PROJ1Session s, long dTime) {
 		opt = o;
 		type = t;
@@ -38,7 +38,7 @@ public class CS5300PROJ2RPCMessage {
 	/**
 	 * Send for session write
 	 */
-	public CS5300PROJ2RPCMessage(double cID, CS5300PROJ2SessionId sID, int v, 
+	public CS5300PROJ2RPCMessage(int cID, CS5300PROJ2SessionId sID, int v, 
 			CS5300PROJ1Session s, long dTime) {
 		opt = OPT.WRITE;
 		type = TYPE.SEND;
@@ -52,7 +52,7 @@ public class CS5300PROJ2RPCMessage {
 	/**
 	 * Receive for session read
 	 */
-	public CS5300PROJ2RPCMessage(double cID, int v, CS5300PROJ1Session s) {
+	public CS5300PROJ2RPCMessage(int cID, int v, CS5300PROJ1Session s) {
 		opt = OPT.READ;
 		type = TYPE.RECEIVE;
 		callID = cID;
@@ -63,7 +63,7 @@ public class CS5300PROJ2RPCMessage {
 	/**
 	 *  Send for read and delete
 	 */
-	public CS5300PROJ2RPCMessage(OPT o, double cID, CS5300PROJ2SessionId sID, int v) {
+	public CS5300PROJ2RPCMessage(OPT o, int cID, CS5300PROJ2SessionId sID, int v) {
 		opt = o;
 		type = TYPE.SEND;
 		callID = cID;
@@ -74,7 +74,7 @@ public class CS5300PROJ2RPCMessage {
 	/**
 	 *  Receive for write and delete
 	 */
-	public CS5300PROJ2RPCMessage(OPT o, double cID, int v) {
+	public CS5300PROJ2RPCMessage(OPT o, int cID, int v) {
 		type = TYPE.RECEIVE;
 		opt = o;
 		callID = cID;
@@ -91,7 +91,7 @@ public class CS5300PROJ2RPCMessage {
 			return; // error case
 		
 		opt = OPT.valueOf(args[1]);
-		callID = Double.parseDouble(args[2]);
+		callID = Integer.parseInt(args[2]);
 		if (args[0].equals("RECEIVE")) { // Receiving message
 			type = TYPE.RECEIVE;
 			version = Integer.parseInt(args[3]);
@@ -153,11 +153,11 @@ public class CS5300PROJ2RPCMessage {
 		this.type = type;
 	}
 
-	public double getCallID() {
+	public int getCallID() {
 		return callID;
 	}
 
-	public void setCallID(double callID) {
+	public void setCallID(int callID) {
 		this.callID = callID;
 	}
 
