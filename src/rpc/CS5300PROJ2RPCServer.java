@@ -35,14 +35,14 @@ public class CS5300PROJ2RPCServer implements Runnable{
 		}
 	}
 	
-	public String getPort() {
+	public String getLocalPort() {
 		if (this.rpcSocket != null) {
-			return "" + this.rpcSocket.getPort();
+			return "" + this.rpcSocket.getLocalPort();
 		}
 		else return "";
 	}
 	
-	public String getAddress() {
+	public String getLocalAddress() {
 		return this.rpcSocket.getLocalAddress().getHostAddress();
 	}
 	
@@ -78,7 +78,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 						sess = sessionDataTable.get(msg.getSessionID());
 					}
 					if (sess == null) {
-						returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), -1, null);
+						returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), -123, null);
 					}
 					else {
 						returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), sess.getVersion(), sess);

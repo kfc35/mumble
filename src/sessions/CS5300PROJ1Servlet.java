@@ -48,10 +48,13 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	 */
 	public CS5300PROJ1Servlet() {
 		super();
-		callID = Double.parseDouble(rpcServerObj.getPort()) * 10000;
+		callID = Double.parseDouble(rpcServerObj.getLocalPort()) * 10000;
 		terminator.start();
 		rpcServer.start();
-		myIPP = new CS5300PROJ2IPP(rpcServerObj.getAddress(), rpcServerObj.getPort());
+		myIPP = new CS5300PROJ2IPP(rpcServerObj.getLocalAddress(), rpcServerObj.getLocalPort());
+		if (DEBUG) {
+			System.out.println(myIPP.toString());
+		}
 	}
 
 	/**
@@ -118,7 +121,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 		CS5300PROJ1Session session = null;
 		if (cookies != null) {
 			for (Cookie c : cookies) {
-				if (c.getName().equals(CS5300PROJ2Cookie.COOKIE_NAME)) {
+				if (c.getName().equals(CS5300PROJ2Cookie.COOKIE_NAME) && c instanceof CS5300PROJ2Cookie) {
 					CS5300PROJ2Cookie cookieCrisp = (CS5300PROJ2Cookie) c;
 					session = sessionDataTable.get(cookieCrisp.getSessionID());
 					if (session == null) { 
@@ -199,16 +202,14 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 			// Set all the JSP attributes
 			getServletContext().setAttribute("message", session.getMessage());
-			getServletContext().setAttribute("locations", session.getLocations());
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			//TODO this is the client cookie's expiration time.. (not the session's expiration time)
-			getServletContext().setAttribute("expires", dateFormat.format(new Date()));
-			getServletContext().setAttribute("myIPP", myIPP.getIP() + ":" + myIPP.getPort());
+			getServletContext().setAttribute("myIPP", myIPP.toString());
 			CS5300PROJ2IPP originIPP = session.getCookie().getSessionID().getOriginIPP();
 			getServletContext().setAttribute("sessionOrigin", originIPP.toString());
 			CS5300PROJ2Location locations = session.getCookie().getIpp();
-			getServletContext().setAttribute("sessionPrimary", locations.getPrimaryIPP().toString());
-			getServletContext().setAttribute("sessionSecondary", locations.getBackupIPP().toString());
+			getServletContext().setAttribute("locations", locations.toString());
+			getServletContext().setAttribute("expires", dateFormat.format(new Date()));
 
 			getServletContext().setAttribute("discardTime", dateFormat.format(new Date(session.getEnd())));
 			
