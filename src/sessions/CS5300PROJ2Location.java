@@ -3,14 +3,18 @@ package sessions;
 public class CS5300PROJ2Location {
 	private CS5300PROJ2IPP primaryIPP;
 	private CS5300PROJ2IPP backupIPP;
-	
+
 	public CS5300PROJ2Location(CS5300PROJ2IPP primaryIPP,
 			CS5300PROJ2IPP backupIPP) {
 		super();
 		this.primaryIPP = primaryIPP;
 		this.backupIPP = backupIPP;
 	}
-	
+
+	public CS5300PROJ2Location(CS5300PROJ2IPP primaryIPP) {
+		this(primaryIPP, null);
+	}
+
 	public CS5300PROJ2Location(String s) {
 		String[] args = s.split("~");
 		primaryIPP = new CS5300PROJ2IPP(args[0]);
@@ -37,8 +41,12 @@ public class CS5300PROJ2Location {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(primaryIPP.toString()).append("~");
-		sb.append(backupIPP.toString());
+		if (backupIPP == null) {
+			sb.append("null");
+		} else {
+			sb.append(backupIPP.toString());
+		}
 		return sb.toString();
 	}
-	
+
 }

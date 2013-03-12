@@ -37,9 +37,37 @@ public class CS5300PROJ2Cookie extends Cookie{
 	 * Dummy cookie to erase cookies on the browser
 	 */
 	public CS5300PROJ2Cookie() {
-		super(CS5300PROJ1Session.COOKIE_NAME, "");
+		super(CS5300PROJ2Cookie.COOKIE_NAME, "");
 	}
 	
+	public CS5300PROJ2SessionId getSessionID() {
+		return sessionID;
+	}
+
+	public void setSessionID(CS5300PROJ2SessionId sessionID) {
+		this.sessionID = sessionID;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+	
+	public void incrementVersion() {
+		this.version++;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
+	public CS5300PROJ2Location getIpp() {
+		return ipp;
+	}
+
+	public void setIpp(CS5300PROJ2Location ipp) {
+		this.ipp = ipp;
+	}
+
 	/**
 	 * This is what it should look like:
 	 * SID_version_IPP = uID~port_address_version_port_address~port_address

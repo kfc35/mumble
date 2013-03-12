@@ -28,7 +28,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 	public static boolean DEBUG = false;
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_MESSAGE = "Hello, User!";
+	public static final String DEFAULT_MESSAGE = "Hello, User!";
 	private ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session> sessionDataTable = 
 			new ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session>();
 	private ConcurrentHashMap<CS5300PROJ2IPP, Integer> memberSet = 
@@ -60,14 +60,13 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
-		String location = request.getRemoteAddr() + ":" + request.getRemotePort();
 		CS5300PROJ1Session session = null;
 		/*Process session information if applicable*/
 
 		synchronized (sessionDataTable) {
 			session = execute(request.getCookies(), REQUEST.REFRESH, null);
 			if (null == session) { //we have to create the session
-				session = createSession(DEFAULT_MESSAGE, location);
+				session = createSession();
 			}
 		}
 
@@ -84,7 +83,6 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 		Enumeration<String> params = request.getParameterNames();
 		String message = DEFAULT_MESSAGE;
 		REQUEST type = REQUEST.LOGOUT;
-		String location = request.getRemoteAddr() + ":" + request.getRemotePort();
 
 		// If this request is a REPLACE request.
 		while(params.hasMoreElements()) {
@@ -99,7 +97,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			if (null == session && type == REQUEST.REPLACE) {
 
 				// The case when expired cookies still come back
-				session = createSession(DEFAULT_MESSAGE, location);
+				session = createSession();
 				session.setMessage(message);
 			}
 		}
@@ -119,9 +117,9 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 		CS5300PROJ1Session session = null;
 		if (cookies != null) {
 			for (Cookie c : cookies) {
-				if (c.getName().equals(CS5300PROJ1Session.COOKIE_NAME)) {
-					String sessionId = c.getValue().split(":")[0];
-					session = sessionDataTable.get(sessionId);
+				if (c.getName().equals(CS5300PROJ2Cookie.COOKIE_NAME)) {
+					CS5300PROJ2Cookie cookieCrisp = (CS5300PROJ2Cookie) c;
+					session = sessionDataTable.get(cookieCrisp.getSessionID());
 					if (session == null) { 
 						/*this can happen if you stop the servlet, clearing the
 						  concurrent hashmap, and then run it again -> Eclipse still has
@@ -131,7 +129,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 					
 					// If logout, then just remove the session
 					if (type == REQUEST.LOGOUT) {
-						sessionDataTable.remove(sessionId);
+						sessionDataTable.remove(cookieCrisp.getSessionID());
 					} else {
 						session.incrementVersion();
 						session.setEnd((new Date()).getTime() + EXPIRY_TIME_FROM_CURRENT);
@@ -157,15 +155,14 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	 * Create a new session and add it to the session table
 	 * @return session
 	 */
-	private CS5300PROJ1Session createSession(String m, String location) {
+	private CS5300PROJ1Session createSession() {
 		UUID uuid = UUID.randomUUID();
-		CS5300PROJ1Session session = new CS5300PROJ1Session(uuid.toString(), 
-				m, location);
+		CS5300PROJ2SessionId sid = new CS5300PROJ2SessionId(uuid.toString(), myIPP);
+		CS5300PROJ1Session session = new CS5300PROJ1Session(sid);
 		if (DEBUG) {
 			System.out.println("Created a New Session: " + session.toString());
 		}
-		CS5300PROJ2SessionId sid = new CS5300PROJ2SessionId(uuid.toString(), myIPP);
-		sessionDataTable.put(sid, session); // TODO: Change to sessionID
+		sessionDataTable.put(sid, session); 
 		return session;
 	}
 	
@@ -194,15 +191,13 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			PrintWriter out = response.getWriter();
 			out.println("Bye");
 		} else {
-			cookieToSend = new CS5300PROJ2SessionId(CS5300PROJ1Session.COOKIE_NAME, 
-					session.getSessionId() + ":" + session.getVersion() + ":" + 
-					session.getLocation());
+			cookieToSend = session.getCookie();
 			cookieToSend.setMaxAge((int) (EXPIRY_TIME_FROM_CURRENT / 1000));
 			response.addCookie(cookieToSend);
 
 			// Set all the JSP attributes
 			getServletContext().setAttribute("message", session.getMessage());
-			getServletContext().setAttribute("address", session.getLocation());
+			getServletContext().setAttribute("locations", session.getLocations());
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			getServletContext().setAttribute("expires", dateFormat.format(new Date(session.getEnd())));
 

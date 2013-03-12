@@ -3,8 +3,6 @@ package sessions;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
-import javax.servlet.http.Cookie;
-
 public class CS5300PROJ1Session {
  
 	/** Default */
@@ -19,10 +17,15 @@ public class CS5300PROJ1Session {
 		end = e;
 		cookie = c;
 	}
-
-	public CS5300PROJ1Session(String m, CS5300PROJ2Cookie c) {
-		this( m, (new Date()).getTime() + CS5300PROJ1Servlet.EXPIRY_TIME_FROM_CURRENT
-				, c);
+	
+	/*
+	 * Brand new session, only need the uid and my own ipp
+	 */
+	public CS5300PROJ1Session(CS5300PROJ2SessionId sID) {
+		message = CS5300PROJ1Servlet.DEFAULT_MESSAGE;
+		end = (new Date()).getTime() + CS5300PROJ1Servlet.EXPIRY_TIME_FROM_CURRENT;
+		CS5300PROJ2Location ipps = new CS5300PROJ2Location(sID.getOriginIPP());
+		cookie = new CS5300PROJ2Cookie(sID, 0, ipps);
 	}
 	
 	public CS5300PROJ1Session(String s) {
@@ -63,6 +66,14 @@ public class CS5300PROJ1Session {
 
 	public void setCookie(CS5300PROJ2Cookie cookie) {
 		this.cookie = cookie;
+	}
+	
+	public void incrementVersion() {
+		cookie.incrementVersion();
+	}
+	
+	public String getLocations() {
+		return cookie.getIpp().toString();
 	}
 
 	/**
