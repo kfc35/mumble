@@ -225,7 +225,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			getServletContext().setAttribute("sessionOrigin", originIPP.toString());
 			CS5300PROJ2Location locations = session.getCookie().getLocation();
 			getServletContext().setAttribute("locations", locations.toString());
-			getServletContext().setAttribute("expires", dateFormat.format(new Date()));
+			getServletContext().setAttribute("expires", dateFormat.format(new Date((new Date()).getTime() + cookieToSend.getMaxAge())));
 
 			getServletContext().setAttribute("discardTime", dateFormat.format(new Date(session.getEnd())));
 
