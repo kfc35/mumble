@@ -184,18 +184,17 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	private void populateJSP(REQUEST type, HttpServletRequest request, 
 			HttpServletResponse response, CS5300PROJ1Session session) 
 			throws IOException, ServletException {
-		Cookie cookieToSend;
+		CS5300PROJ2Cookie cookieToSend;
 		if (type == REQUEST.LOGOUT) {
 			
 			// Creates a cookie to send to the client to erase all past cookies
-			cookieToSend = new Cookie(CS5300PROJ1Session.COOKIE_NAME, "");
+			cookieToSend = new CS5300PROJ2Cookie();
 			cookieToSend.setMaxAge(0);
 			response.addCookie(cookieToSend);
 			PrintWriter out = response.getWriter();
 			out.println("Bye");
 		} else {
-			//TODO make this _ and not ":"
-			cookieToSend = new Cookie(CS5300PROJ1Session.COOKIE_NAME, 
+			cookieToSend = new CS5300PROJ2SessionId(CS5300PROJ1Session.COOKIE_NAME, 
 					session.getSessionId() + ":" + session.getVersion() + ":" + 
 					session.getLocation());
 			cookieToSend.setMaxAge((int) (EXPIRY_TIME_FROM_CURRENT / 1000));

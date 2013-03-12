@@ -7,16 +7,17 @@ public class CS5300PROJ2Cookie extends Cookie{
 	private CS5300PROJ2SessionId sessionID;
 	private int version;
 	private CS5300PROJ2Location ipp;
+	public static String COOKIE_NAME = "CS5300PROJ2";
 	
 	public CS5300PROJ2Cookie(CS5300PROJ2SessionId sID, int v, CS5300PROJ2Location i) {
-		super("", ""); //For posterity and legacy
+		super(CS5300PROJ2Cookie.COOKIE_NAME, ""); //For posterity and legacy
 		sessionID = sID;
 		version = v;
 		ipp = i;
 	}
 	
 	public CS5300PROJ2Cookie(String s) {
-		super("", ""); // For posterity and legacy
+		super(CS5300PROJ2Cookie.COOKIE_NAME, ""); // For posterity and legacy
 		String[] args = s.split("_", 4);
 		/*
 		 * Splits into : 
@@ -36,7 +37,7 @@ public class CS5300PROJ2Cookie extends Cookie{
 	 * Dummy cookie to erase cookies on the browser
 	 */
 	public CS5300PROJ2Cookie() {
-		super("", "");
+		super(CS5300PROJ1Session.COOKIE_NAME, "");
 	}
 	
 	/**
