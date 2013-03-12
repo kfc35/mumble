@@ -230,6 +230,12 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			getServletContext().setAttribute("discardTime", dateFormat.format(new Date(session.getEnd())));
 
 			//TODO Make a list accessible in JSP of member set
+			synchronized(memberSet) {
+				//accessing the set is synched with the hashmap
+				for (CS5300PROJ2IPP member : memberSet.keySet()) {
+				
+				}
+			}
 			RequestDispatcher rd = request.getRequestDispatcher("/CS5300PROJ1index.jsp");
 			rd.forward(request, response);
 		}
