@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import rpc.CS5300PROJ2RPCServer;
+
 /**
  * Servlet implementation class BasicSessionServlet
  */
@@ -27,8 +29,8 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	public static boolean DEBUG = false;
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_MESSAGE = "Hello, User!";
-	private ConcurrentHashMap<String, CS5300PROJ1Session> sessionDataTable = 
-			new ConcurrentHashMap<String, CS5300PROJ1Session>();
+	private ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session> sessionDataTable = 
+			new ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session>();
 	private ConcurrentHashMap<CS5300PROJ2IPP, Integer> memberSet = 
 			new ConcurrentHashMap<CS5300PROJ2IPP, Integer>();
 
@@ -36,7 +38,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	private Thread terminator = new Thread(new CS5300PROJ1Terminator(sessionDataTable));
 	private CS5300PROJ2RPCServer rpcServerObj = new CS5300PROJ2RPCServer(sessionDataTable, memberSet);
 	private Thread rpcServer = new Thread(rpcServerObj);
-	private int numMessagesSent;
+	private double callID;
 	private CS5300PROJ2IPP myIPP;
 	
 
@@ -45,7 +47,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	 */
 	public CS5300PROJ1Servlet() {
 		super();
-		numMessagesSent = Integer.parseInt(rpcServerObj.getPort()) * 10000;
+		callID = Double.parseDouble(rpcServerObj.getPort()) * 10000;
 		terminator.start();
 		rpcServer.start();
 		myIPP = new CS5300PROJ2IPP(rpcServerObj.getAddress(), rpcServerObj.getPort());
@@ -162,7 +164,8 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 		if (DEBUG) {
 			System.out.println("Created a New Session: " + session.toString());
 		}
-		sessionDataTable.put(uuid.toString(), session);
+		CS5300PROJ2SessionId sid = new CS5300PROJ2SessionId(uuid.toString(), myIPP);
+		sessionDataTable.put(sid, session); // TODO: Change to sessionID
 		return session;
 	}
 	

@@ -11,6 +11,12 @@ public class CS5300PROJ2SessionId {
 		this.originIPP = originIPP;
 	}
 	
+	public CS5300PROJ2SessionId(String s) {
+		String args[] = s.split("_");
+		sessionId = args[0];
+		originIPP = new CS5300PROJ2IPP(args[1], args[2]);
+	}
+	
 	public String getSessionId() {
 		return sessionId;
 	}

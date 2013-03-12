@@ -10,6 +10,12 @@ public class CS5300PROJ2IPP {
 		this.port = port;
 	}
 	
+	public CS5300PROJ2IPP(String s) {
+		String args[] = s.split("_");
+		IP = args[0];
+		port = args[1];
+	}
+	
 	public String getIP() {
 		return IP;
 	}

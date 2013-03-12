@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public class CS5300PROJ1Terminator implements Runnable {
-	private ConcurrentHashMap<String, CS5300PROJ1Session> sessionDataTable;
+	private ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session> sessionDataTable;
 
-	public CS5300PROJ1Terminator(ConcurrentHashMap<String, CS5300PROJ1Session> sessionDataTable) {
+	public CS5300PROJ1Terminator(ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session> sessionDataTable) {
 		this.sessionDataTable = sessionDataTable;
 	}
 

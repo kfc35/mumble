@@ -1,5 +1,6 @@
 package sessions;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 import javax.servlet.http.Cookie;
@@ -80,12 +81,18 @@ public class CS5300PROJ1Session extends Cookie {
 	}
 
 	public String toString() {
+		// TODO: You can't do this, because session ID is already using _.
 		StringBuilder sb = new StringBuilder();
 		sb.append(sessionId).append("_");
 		sb.append(getVersion()).append("_");
 		sb.append(end).append("_");
 		sb.append(location.toString()).append("_");
 		sb.append(message);
-		return sb.toString().substring(0, 512);
+		try {
+			return (new String(sb.toString().getBytes("UTF-8"), 0, 512, "UTF-8")).toString();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return "";
+		}
 	}
 }
