@@ -86,7 +86,7 @@ public class CS5300PROJ2RPCMessage {
 	 * @param m
 	 */
 	public CS5300PROJ2RPCMessage(String m) {
-		String[] args = m.split(":");
+		String[] args = m.split("~");
 		if (args.length < 4) 
 			return; // error case
 		
@@ -111,21 +111,21 @@ public class CS5300PROJ2RPCMessage {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(type).append(":"); //0
-		sb.append(opt).append(":");
-		sb.append(callID).append(":"); //2
+		sb.append(type).append("~"); //0
+		sb.append(opt).append("~");
+		sb.append(callID).append("~"); //2
 		
 		if (type == type.RECEIVE) {
 			sb.append(version); //3
 			if (opt == OPT.READ) {
-				sb.append(":").append(session.toString()); //4
+				sb.append("~").append(session.toString()); //4
 			} 
 		} else {
 			sb.append(sessionID.toString()).append(":"); //3
 			sb.append(version); //4
 			if (opt == OPT.WRITE) {
-				sb.append(":").append(discardTime); //5
-				sb.append(":").append(session.toString()); //6
+				sb.append("~").append(discardTime); //5
+				sb.append("~").append(session.toString()); //6
 			}
 		}
 		return sb.toString();
