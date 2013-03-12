@@ -91,8 +91,5 @@ public class CS5300PROJ2RPCClient {
 		return recvM;
 	}
 	
-	private static byte[] to512Bytes(String s) throws UnsupportedEncodingException {
-		String shortened = new String(s.getBytes("UTF-8"), 0, 512, "UTF-8");
-		return shortened.getBytes("UTF-8");
-	}
+	
 }
