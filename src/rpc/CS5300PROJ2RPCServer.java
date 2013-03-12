@@ -61,6 +61,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 			}
 			InetAddress returnAddr = recvPkt.getAddress();
 			int returnPort = recvPkt.getPort();
+			//TODO add this guy to the memberSet
 			String msgString = null;
 			try {
 				msgString = new String(inBuf, 0, 512, "UTF-8");
