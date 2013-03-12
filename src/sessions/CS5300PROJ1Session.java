@@ -68,6 +68,14 @@ public class CS5300PROJ1Session {
 		this.cookie = cookie;
 	}
 	
+	public int getVersion() {
+		return cookie.getVersion();
+	}
+	
+	public void setVersion(int v) {
+		cookie.setVersion(v);
+	}
+	
 	public void incrementVersion() {
 		cookie.incrementVersion();
 	}

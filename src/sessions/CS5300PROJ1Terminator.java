@@ -25,13 +25,13 @@ public class CS5300PROJ1Terminator implements Runnable {
 				// Synchronizes the sessionDataTable so that the access and removes don't conflict
 				synchronized (sessionDataTable) {
 					// For every entry in the hashtable, remove all expired sessions 
-					for (Entry<String, CS5300PROJ1Session> e: sessionDataTable.entrySet()) {
+					for (Entry<CS5300PROJ2SessionId, CS5300PROJ1Session> e: sessionDataTable.entrySet()) {
 						CS5300PROJ1Session session = e.getValue();
 						
 						if (session.getEnd() < System.currentTimeMillis()) {
 							if (CS5300PROJ1Servlet.DEBUG) {
 								System.out.println("Terminator removing the session: " 
-										+ session.getSessionId());
+										+ session.getCookie().getSessionID());
 							}
 							sessionDataTable.remove(e.getKey());
 						}
