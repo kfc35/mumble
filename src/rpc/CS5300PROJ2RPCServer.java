@@ -1,6 +1,9 @@
 package rpc;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,9 +46,35 @@ public class CS5300PROJ2RPCServer implements Runnable{
 	
 	@Override
 	public synchronized void run() {
-		System.out.println(this.rpcSocket.getLocalAddress().getHostAddress());
 		while(true) {
-			//TODO RPC server code.
+			byte[] inBuf = new byte[512];
+			DatagramPacket recvPkt = new DatagramPacket(inBuf, inBuf.length);
+			try {
+				rpcSocket.receive(recvPkt);
+			} catch (IOException e) {
+				if (CS5300PROJ1Servlet.DEBUG) {
+					e.printStackTrace();
+				}
+				continue; //just drop this packet
+			}
+			InetAddress returnAddr = recvPkt.getAddress();
+			int returnPort = recvPkt.getPort();
+			//TODO Sweet, is this how I'm supposed to parse the buffer?
+			CS5300PROJ2RPCMessage msg = new CS5300PROJ2RPCMessage(inBuf.toString());
+			switch (msg.getOpt()) {
+				case READ:
+					CS5300PROJ1Session sess = sessionDataTable.get(msg.getSessionID());
+					break;
+					
+				case WRITE:
+					break;
+					
+				case DELETE:
+					break;
+				
+				default:
+					break;
+			}
 		}
 	}
 }
