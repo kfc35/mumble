@@ -50,7 +50,7 @@ public class CS5300PROJ2RPCMessage {
 	}
 	
 	/**
-	 * Receive for session write
+	 * Receive for session read
 	 */
 	public CS5300PROJ2RPCMessage(double cID, int v, CS5300PROJ1Session s) {
 		opt = OPT.READ;

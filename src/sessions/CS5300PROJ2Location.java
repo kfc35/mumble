@@ -10,6 +10,12 @@ public class CS5300PROJ2Location {
 		this.primaryIPP = primaryIPP;
 		this.backupIPP = backupIPP;
 	}
+	
+	public CS5300PROJ2Location(String s) {
+		String[] args = s.split("~");
+		primaryIPP = new CS5300PROJ2IPP(args[0]);
+		backupIPP = new CS5300PROJ2IPP(args[1]);
+	}
 
 	public CS5300PROJ2IPP getPrimaryIPP() {
 		return primaryIPP;
@@ -30,7 +36,7 @@ public class CS5300PROJ2Location {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(primaryIPP.toString()).append("_");
+		sb.append(primaryIPP.toString()).append("~");
 		sb.append(backupIPP.toString());
 		return sb.toString();
 	}
