@@ -202,11 +202,13 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			//TODO this is the client cookie's expiration time.. (not the session's expiration time)
 			getServletContext().setAttribute("expires", dateFormat.format(new Date()));
 			getServletContext().setAttribute("myIPP", myIPP.getIP() + ":" + myIPP.getPort());
-			//TODO this value needs to be updated to SessionId.originIPP's info
-			getServletContext().setAttribute("sessionOrigin", session.getLocation());
-			//TODO primary and secondary need to be set to locations primary and secondary IPP's
-			getServletContext().setAttribute("sessionPrimary", session.getLocation());
-			getServletContext().setAttribute("sessionSecondary", session.getLocation());
+			CS5300PROJ2IPP originIPP = session.getCookie().getSessionID().getOriginIPP();
+			getServletContext().setAttribute("sessionOrigin", originIPP.getIP() + ":" + originIPP.getPort());
+			CS5300PROJ2Location locations = session.getCookie().getIpp();
+			getServletContext().setAttribute("sessionPrimary", locations.getPrimaryIPP().getIP() + 
+					":" + locations.getPrimaryIPP().getPort());
+			getServletContext().setAttribute("sessionSecondary", locations.getBackupIPP().getIP() + 
+					":" + locations.getBackupIPP().getPort());
 
 			getServletContext().setAttribute("discardTime", dateFormat.format(new Date(session.getEnd())));
 			

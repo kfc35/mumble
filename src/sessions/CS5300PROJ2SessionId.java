@@ -36,7 +36,7 @@ public class CS5300PROJ2SessionId {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(sessionId).append("~");
+		sb.append(uId).append("~");
 		sb.append(originIPP.toString());
 		return sb.toString();
 	}
