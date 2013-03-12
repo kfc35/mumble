@@ -6,7 +6,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.RequestDispatcher;
@@ -40,6 +39,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	private Thread rpcServer = new Thread(rpcServerObj);
 	private double callID;
 	private CS5300PROJ2IPP myIPP;
+	private int numSessions = 0;
 	
 
 	/**
@@ -155,10 +155,11 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	 * Create a new session and add it to the session table
 	 * @return session
 	 */
-	private CS5300PROJ1Session createSession() {
-		UUID uuid = UUID.randomUUID();
-		CS5300PROJ2SessionId sid = new CS5300PROJ2SessionId(uuid.toString(), myIPP);
+	private synchronized CS5300PROJ1Session createSession() {
+		CS5300PROJ2SessionId sid = new CS5300PROJ2SessionId(numSessions++, myIPP);
 		CS5300PROJ1Session session = new CS5300PROJ1Session(sid);
+		
+		//TODO need to send out messages to the other memberSets is there are any
 		if (DEBUG) {
 			System.out.println("Created a New Session: " + session.toString());
 		}

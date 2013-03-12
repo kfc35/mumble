@@ -2,27 +2,28 @@ package sessions;
 
 public class CS5300PROJ2SessionId {
 	
-	private String uId;
+	private int sessionNum;
 	private CS5300PROJ2IPP originIPP;
 	
-	public CS5300PROJ2SessionId(String sessionId, CS5300PROJ2IPP originIPP) {
+	public CS5300PROJ2SessionId(int sNum, CS5300PROJ2IPP originIPP) {
 		super();
-		this.uId = sessionId;
+		this.sessionNum = sNum;
 		this.originIPP = originIPP;
 	}
 	
 	public CS5300PROJ2SessionId(String s) {
 		String args[] = s.split("~");
-		uId = args[0];
+		sessionNum = Integer.parseInt(args[0]);
 		originIPP = new CS5300PROJ2IPP(args[1], args[2]);
 	}
 	
-	public String getUId() {
-		return uId;
+
+	public int getSessionNum() {
+		return sessionNum;
 	}
 
-	public void setUId(String uId) {
-		this.uId = uId;
+	public void setSessionNum(int sessionNum) {
+		this.sessionNum = sessionNum;
 	}
 
 	public CS5300PROJ2IPP getOriginIPP() {
@@ -36,7 +37,7 @@ public class CS5300PROJ2SessionId {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(uId).append("~");
+		sb.append(sessionNum).append("~");
 		sb.append(originIPP.toString());
 		return sb.toString();
 	}
