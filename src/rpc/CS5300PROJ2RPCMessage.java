@@ -12,7 +12,7 @@ public class CS5300PROJ2RPCMessage {
 	private OPT opt;
 	private double callID;
 	private CS5300PROJ2SessionId sessionID;
-	private int version; // -1, 1 for acknowledgment in Write/Delete return
+	private int version; // -1 for not found, 1 for acknowledgment in Write/Delete return
 	private CS5300PROJ1Session session;
 	private long discardTime;
 	
@@ -50,7 +50,7 @@ public class CS5300PROJ2RPCMessage {
 	}
 	
 	/**
-	 * Receive for session write
+	 * Receive for session read
 	 */
 	public CS5300PROJ2RPCMessage(double cID, int v, CS5300PROJ1Session s) {
 		opt = OPT.READ;
@@ -118,6 +118,7 @@ public class CS5300PROJ2RPCMessage {
 		if (type == type.RECEIVE) {
 			sb.append(version); //3
 			if (opt == OPT.READ) {
+				//TODO session null case!!
 				sb.append("~").append(session.toString()); //4
 			} 
 		} else {
