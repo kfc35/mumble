@@ -115,7 +115,7 @@ public class CS5300PROJ2RPCMessage {
 		sb.append(opt).append("~");
 		sb.append(callID).append("~"); //2
 		
-		if (type == type.RECEIVE) {
+		if (type == TYPE.RECEIVE) {
 			sb.append(version); //3
 			if (opt == OPT.READ) {
 				//TODO session null case!!

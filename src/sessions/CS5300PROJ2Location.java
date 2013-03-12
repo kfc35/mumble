@@ -18,7 +18,11 @@ public class CS5300PROJ2Location {
 	public CS5300PROJ2Location(String s) {
 		String[] args = s.split("~");
 		primaryIPP = new CS5300PROJ2IPP(args[0]);
-		backupIPP = new CS5300PROJ2IPP(args[1]);
+		if (args[1].toLowerCase().equals("null")) {
+			backupIPP = null;
+		} else {
+			backupIPP = new CS5300PROJ2IPP(args[1]);
+		}
 	}
 
 	public CS5300PROJ2IPP getPrimaryIPP() {
@@ -31,6 +35,10 @@ public class CS5300PROJ2Location {
 
 	public CS5300PROJ2IPP getBackupIPP() {
 		return backupIPP;
+	}
+	
+	public boolean hasBackupIPP() {
+		return backupIPP == null;
 	}
 
 	public void setBackupIPP(CS5300PROJ2IPP backupIPP) {

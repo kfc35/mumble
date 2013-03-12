@@ -84,6 +84,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		CS5300PROJ1Session session = null;
+		@SuppressWarnings("unchecked")
 		Enumeration<String> params = request.getParameterNames();
 		String message = DEFAULT_MESSAGE;
 		REQUEST type = REQUEST.LOGOUT;

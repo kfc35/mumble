@@ -6,6 +6,7 @@ import java.util.Date;
 public class CS5300PROJ1Session {
  
 	/** Default */
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 
 	private String message;
