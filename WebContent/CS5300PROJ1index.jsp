@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>kfc35 - ss2249 - hhc39 - CS5300 - Proj 1a</title>
+<title>kfc35 - ss2249 - hhc39 - CS5300 - Proj 1b</title>
 </head>
 <body>
 <h1><%=getServletContext().getAttribute("message")%></h1>
@@ -14,7 +14,14 @@
 	<!-- TODO look into maxLength for the message -->
 <form method="get" action=""><input type="submit" name="Refresh" value="Refresh"/></form>
 <form method="post" action=""><input type="submit" name="Log out" value="Log out"/></form>
+<form method="post" action=""><input type="submit" name="Crash" value="Crash"/></form>
 <p>Session on <%=getServletContext().getAttribute("address")%></p>
+<p>This server's IPP: </p>
+<p>Session Data found from: </p>
+<p>IPP Primary of this session data: </p>
+<p>IPP Backup of this session data: </p>
 <p>Expires <%=getServletContext().getAttribute("expires")%></p>
+<p>Discard Time: </p>
+<p>Member Set IPPs: </p>
 </body>
 </html>

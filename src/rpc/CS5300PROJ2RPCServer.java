@@ -61,7 +61,15 @@ public class CS5300PROJ2RPCServer implements Runnable{
 			}
 			InetAddress returnAddr = recvPkt.getAddress();
 			int returnPort = recvPkt.getPort();
-			CS5300PROJ2RPCMessage msg = new CS5300PROJ2RPCMessage(inBuf.toString());
+			//TODO add this guy to the memberSet
+			String msgString = null;
+			try {
+				msgString = new String(inBuf, 0, 512, "UTF-8");
+			} catch (UnsupportedEncodingException e1) {
+				// this should NEVER happen.
+				e1.printStackTrace();
+			}
+			CS5300PROJ2RPCMessage msg = new CS5300PROJ2RPCMessage(msgString);
 			CS5300PROJ2RPCMessage returnMsg = null;
 			switch (msg.getOpt()) {
 				case READ:
@@ -78,11 +86,13 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					break;
 					
 				case WRITE:
+					//TODO agree on an established ordering for locking dataTable and memberSet
 					synchronized(sessionDataTable) {
 						sessionDataTable.put(msg.getSessionID(), msg.getSession());
 					}
 					//TODO i may have to do more here than this...
-					//E.g. GARBAGE COLLECT pre-existing session
+					//E.g. "GARBAGE COLLECT" pre-existing session
+					//Also, ADDING primary and secondary to memberSet if applicable
 					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.WRITE, msg.getCallID(), 1);
 					break;
 					
