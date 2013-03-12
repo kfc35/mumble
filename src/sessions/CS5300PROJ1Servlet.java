@@ -199,8 +199,18 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			getServletContext().setAttribute("message", session.getMessage());
 			getServletContext().setAttribute("locations", session.getLocations());
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-			getServletContext().setAttribute("expires", dateFormat.format(new Date(session.getEnd())));
+			//TODO this is the client cookie's expiration time.. (not the session's expiration time)
+			getServletContext().setAttribute("expires", dateFormat.format(new Date()));
+			getServletContext().setAttribute("myIPP", myIPP.getIP() + ":" + myIPP.getPort());
+			//TODO this value needs to be updated to SessionId.originIPP's info
+			getServletContext().setAttribute("sessionOrigin", session.getLocation());
+			//TODO primary and secondary need to be set to locations primary and secondary IPP's
+			getServletContext().setAttribute("sessionPrimary", session.getLocation());
+			getServletContext().setAttribute("sessionSecondary", session.getLocation());
 
+			getServletContext().setAttribute("discardTime", dateFormat.format(new Date(session.getEnd())));
+			
+			//TODO Make a list accessible in JSP of member set
 			RequestDispatcher rd = request.getRequestDispatcher("/CS5300PROJ1index.jsp");
 			rd.forward(request, response);
 		}
