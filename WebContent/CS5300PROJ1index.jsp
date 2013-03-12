@@ -16,12 +16,12 @@
 <form method="post" action=""><input type="submit" name="Log out" value="Log out"/></form>
 <form method="post" action=""><input type="submit" name="Crash" value="Crash"/></form>
 <p>Session on <%=getServletContext().getAttribute("address")%></p>
-<p>This server's IPP: </p>
-<p>Session Data found from: </p>
-<p>IPP Primary of this session data: </p>
-<p>IPP Backup of this session data: </p>
+<p>This server's IPP: <%=getServletContext().getAttribute("myIPP")%></p>
+<p>Session Data found from: <%=getServletContext().getAttribute("sessionOrigin")%></p>
+<p>IPP Primary of this session data: <%=getServletContext().getAttribute("sessionPrimary")%></p>
+<p>IPP Backup of this session data: <%=getServletContext().getAttribute("sessionSecondary")%></p>
 <p>Expires <%=getServletContext().getAttribute("expires")%></p>
-<p>Discard Time: </p>
+<p>Discard Time: <%=getServletContext().getAttribute("discardTime")%></p>
 <p>Member Set IPPs: </p>
 </body>
 </html>
