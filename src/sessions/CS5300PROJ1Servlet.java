@@ -27,6 +27,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	private enum REQUEST{REFRESH, REPLACE, LOGOUT}
 
 	public static boolean DEBUG = false;
+	public static boolean CRASH = false;
 	private static final long serialVersionUID = 1L;
 	public static final String DEFAULT_MESSAGE = "Hello, User!";
 	private ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session> sessionDataTable = 
@@ -203,12 +204,10 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			getServletContext().setAttribute("expires", dateFormat.format(new Date()));
 			getServletContext().setAttribute("myIPP", myIPP.getIP() + ":" + myIPP.getPort());
 			CS5300PROJ2IPP originIPP = session.getCookie().getSessionID().getOriginIPP();
-			getServletContext().setAttribute("sessionOrigin", originIPP.getIP() + ":" + originIPP.getPort());
+			getServletContext().setAttribute("sessionOrigin", originIPP.toString());
 			CS5300PROJ2Location locations = session.getCookie().getIpp();
-			getServletContext().setAttribute("sessionPrimary", locations.getPrimaryIPP().getIP() + 
-					":" + locations.getPrimaryIPP().getPort());
-			getServletContext().setAttribute("sessionSecondary", locations.getBackupIPP().getIP() + 
-					":" + locations.getBackupIPP().getPort());
+			getServletContext().setAttribute("sessionPrimary", locations.getPrimaryIPP().toString());
+			getServletContext().setAttribute("sessionSecondary", locations.getBackupIPP().toString());
 
 			getServletContext().setAttribute("discardTime", dateFormat.format(new Date(session.getEnd())));
 			
