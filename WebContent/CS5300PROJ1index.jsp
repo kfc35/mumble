@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="UTF-8"%>
+<%
+	String[] array = (String[]) getServletContext().getAttribute("members");
+%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -15,11 +18,26 @@
 <form method="get" action=""><input type="submit" name="Refresh" value="Refresh"/></form>
 <form method="post" action=""><input type="submit" name="Log out" value="Log out"/></form>
 <form method="post" action=""><input type="submit" name="Crash" value="Crash"/></form>
+<p>This server is located at: <%=getServletContext().getAttribute("address")%></p>
 <p>This server's IPP port: <%=getServletContext().getAttribute("myIPP")%></p>
 <p>Session Data found from: <%=getServletContext().getAttribute("sessionOrigin")%></p>
 <p>IPP Primary~Secondary of this session data: <%=getServletContext().getAttribute("locations")%></p>
 <p>Expires <%=getServletContext().getAttribute("expires")%></p>
 <p>Discard Time: <%=getServletContext().getAttribute("discardTime")%></p>
-<p>Member Set IPPs: </p>
+<p>Member Set IPPs:
+<%
+	int i = 0;
+	for(i = 0; i < array.length - 1; i++) 
+	{
+		out.print(array[i] +", ");
+	}
+	if (array.length != 0) {
+		out.print(array[array.length - 1]);
+	}
+	else {
+		out.print("None");
+	}
+%> 
+	</p>
 </body>
 </html>

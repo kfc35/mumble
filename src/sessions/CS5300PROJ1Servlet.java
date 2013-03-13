@@ -218,24 +218,27 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 			// Set all the JSP attributes
 			getServletContext().setAttribute("message", session.getMessage());
+			getServletContext().setAttribute("address", request.getRemoteAddr() + "_" + request.getRemotePort());
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-			//TODO this is the client cookie's expiration time.. (not the session's expiration time)
 			getServletContext().setAttribute("myIPP", myIPP.toString());
 			CS5300PROJ2IPP originIPP = session.getCookie().getSessionID().getOriginIPP();
 			getServletContext().setAttribute("sessionOrigin", originIPP.toString());
 			CS5300PROJ2Location locations = session.getCookie().getLocation();
 			getServletContext().setAttribute("locations", locations.toString());
-			getServletContext().setAttribute("expires", dateFormat.format(new Date((new Date()).getTime() + cookieToSend.getMaxAge())));
+			getServletContext().setAttribute("expires", dateFormat.format(new Date((new Date()).getTime() + (cookieToSend.getMaxAge() * 1000))));
 
 			getServletContext().setAttribute("discardTime", dateFormat.format(new Date(session.getEnd())));
 
-			//TODO Make a list accessible in JSP of member set
+			Object[] members = null;
 			synchronized(memberSet) {
-				//accessing the set is synched with the hashmap
-				for (CS5300PROJ2IPP member : memberSet.keySet()) {
-				
-				}
+				members = memberSet.keySet().toArray();
 			}
+			String[] membersString = new String[members.length];
+			for (int i = 0; i < members.length; i++) {
+				membersString[i] = members[i].toString();
+			}
+			getServletContext().setAttribute("members", membersString);
+			
 			RequestDispatcher rd = request.getRequestDispatcher("/CS5300PROJ1index.jsp");
 			rd.forward(request, response);
 		}
