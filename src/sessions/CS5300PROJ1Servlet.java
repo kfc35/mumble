@@ -41,13 +41,17 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	private ConcurrentHashMap<CS5300PROJ2IPP, Integer> memberSet = 
 			new ConcurrentHashMap<CS5300PROJ2IPP, Integer>();
 
-	public static final long EXPIRY_TIME_FROM_CURRENT = 1000 * 120; //2 minutes 
-	//TODO: KEVIN!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	public static final long DISCARD_TIME_FROM_CURRENT = EXPIRY_TIME_FROM_CURRENT + 2 * 3000 + 100; 
-	//TODO: KEVIN!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	/**Time Variables for timeouts**/
+	public static final long DELTA = 1000 * 3; //3 secs
+	public static final long SESSION_TIMEOUT_SECS = 1000 * 120; //120 secs = 2 mins
+	public static final long EXPIRY_TIME_FROM_CURRENT = SESSION_TIMEOUT_SECS + DELTA;
+	public static final long GAMMA = 100; //0.1 secs
+	public static final long DISCARD_TIME_FROM_CURRENT = SESSION_TIMEOUT_SECS + 2 * DELTA + GAMMA;
+	
 	private Thread terminator = new Thread(new CS5300PROJ1Terminator(sessionDataTable));
 	private CS5300PROJ2RPCServer rpcServerObj = new CS5300PROJ2RPCServer(sessionDataTable, memberSet);
 	private Thread rpcServer = new Thread(rpcServerObj);
+	
 	private int callID;
 	private CS5300PROJ2IPP myIPP;
 	private int numSessions = 0;
