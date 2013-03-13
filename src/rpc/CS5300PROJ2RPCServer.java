@@ -69,6 +69,8 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				e1.printStackTrace();
 			}
 			CS5300PROJ2RPCMessage msg = new CS5300PROJ2RPCMessage(msgString);
+			//TODO we need to change this port... we modify the message class.
+			//According to section 3.8a
 			CS5300PROJ2IPP recvIPP = new CS5300PROJ2IPP(returnAddr.getHostAddress(), returnPort + "");
 			CS5300PROJ2RPCMessage returnMsg = null;
 			switch (msg.getOpt()) {
