@@ -193,6 +193,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 					// if IPP local is either Primary or backup
 					if (cookieCrisp.equalsEitherLocation(myIPP)) {
+						//TODO sweet doesn't this need to be synchronized?
 						session = sessionDataTable.get(cookieCrisp.getSessionID());
 						if (session == null) { 
 							/*this can happen if you stop the servlet, clearing the
