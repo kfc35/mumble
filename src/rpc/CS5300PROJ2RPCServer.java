@@ -11,11 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import sessions.CS5300PROJ1Servlet;
 import sessions.CS5300PROJ1Session;
 import sessions.CS5300PROJ2IPP;
+import sessions.CS5300PROJ2Location;
 import sessions.CS5300PROJ2SessionId;
 
 public class CS5300PROJ2RPCServer implements Runnable{
 	private ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session> sessionDataTable;
-	//TODO memberSet addings and updates
 	private ConcurrentHashMap<CS5300PROJ2IPP, Integer> memberSet;
 	private DatagramSocket rpcSocket;
 
@@ -61,7 +61,6 @@ public class CS5300PROJ2RPCServer implements Runnable{
 			}
 			InetAddress returnAddr = recvPkt.getAddress();
 			int returnPort = recvPkt.getPort();
-			//TODO add this guy to the memberSet
 			String msgString = null;
 			try {
 				msgString = new String(inBuf, 0, 512, "UTF-8");
@@ -70,6 +69,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				e1.printStackTrace();
 			}
 			CS5300PROJ2RPCMessage msg = new CS5300PROJ2RPCMessage(msgString);
+			CS5300PROJ2IPP recvIPP = new CS5300PROJ2IPP(returnAddr.getHostAddress(), returnPort + "");
 			CS5300PROJ2RPCMessage returnMsg = null;
 			switch (msg.getOpt()) {
 				case READ:
@@ -86,13 +86,20 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					break;
 					
 				case WRITE:
-					//TODO agree on an established ordering for locking dataTable and memberSet
 					synchronized(sessionDataTable) {
 						sessionDataTable.put(msg.getSessionID(), msg.getSession());
 					}
+					CS5300PROJ2Location location = msg.getSession().getCookie().getLocation();
+					synchronized(memberSet) {
+						if (!memberSet.containsKey(location.getPrimaryIPP())) {
+							memberSet.put(location.getPrimaryIPP(), -1);
+						}
+						if (location.getBackupIPP() != null && !memberSet.containsKey(location.getBackupIPP())) {
+							memberSet.put(location.getBackupIPP(), -1);
+						}
+					}
 					//TODO i may have to do more here than this...
 					//E.g. "GARBAGE COLLECT" pre-existing session
-					//Also, ADDING primary and secondary to memberSet if applicable
 					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.WRITE, msg.getCallID(), 1);
 					break;
 					
@@ -105,6 +112,21 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				
 				default:
 					break;
+			}
+			/*This synchronized block is down here to avoid deadlock
+			 * Our locks are ordered such that sessionDataTable is locked first */
+			synchronized(memberSet) { //add this guy to the memberSet if not added before
+				if (!memberSet.containsKey(recvIPP)) {
+					memberSet.put(recvIPP, msg.getCallID());
+				}
+				else if (memberSet.get(recvIPP) > msg.getCallID()) {
+					//the most recent callID processed from this member
+					//is LATER than the callID of this message from the SAME member
+					continue;
+				}
+				else {
+					memberSet.put(recvIPP, msg.getCallID());
+				}
 			}
 			if (returnMsg != null) {
 				byte[] bytes = null;

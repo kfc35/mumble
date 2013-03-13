@@ -40,6 +40,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			new ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session>();
 	private ConcurrentHashMap<CS5300PROJ2IPP, Integer> memberSet = 
 			new ConcurrentHashMap<CS5300PROJ2IPP, Integer>();
+	//The value is the latest callID received by this member
 
 	/**Time Variables for timeouts**/
 	public static final long DELTA = 1000 * 3; //3 secs
