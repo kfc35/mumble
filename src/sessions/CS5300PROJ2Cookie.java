@@ -68,12 +68,16 @@ public class CS5300PROJ2Cookie extends Cookie{
 		this.location = ipp;
 	}
 	
-	public CS5300PROJ2IPP getPrimaryLocation() {
+	public CS5300PROJ2IPP getPrimaryIPP() {
 		return this.location.getPrimaryIPP();
 	}
 	
-	public CS5300PROJ2IPP getBackupLocation() {
-		return this.location.getPrimaryIPP();
+	public CS5300PROJ2IPP getBackupIPP() {
+		return this.location.getBackupIPP();
+	}
+	
+	public boolean hasBackupIPP() {
+		return this.getBackupIPP() == null;
 	}
 
 	/**

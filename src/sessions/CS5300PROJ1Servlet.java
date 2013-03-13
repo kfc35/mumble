@@ -6,8 +6,10 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.RequestDispatcher;
@@ -16,6 +18,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 import rpc.CS5300PROJ2RPCClient;
 import rpc.CS5300PROJ2RPCServer;
@@ -38,6 +42,9 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			new ConcurrentHashMap<CS5300PROJ2IPP, Integer>();
 
 	public static final long EXPIRY_TIME_FROM_CURRENT = 1000 * 120; //2 minutes 
+	//TODO: KEVIN!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	public static final long DISCARD_TIME_FROM_CURRENT = EXPIRY_TIME_FROM_CURRENT + 2 * 3000 + 100; 
+	//TODO: KEVIN!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	private Thread terminator = new Thread(new CS5300PROJ1Terminator(sessionDataTable));
 	private CS5300PROJ2RPCServer rpcServerObj = new CS5300PROJ2RPCServer(sessionDataTable, memberSet);
 	private Thread rpcServer = new Thread(rpcServerObj);
@@ -125,7 +132,55 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	 */
 	private CS5300PROJ1Session execute(Cookie[] cookies, REQUEST type, String message) 
 			throws NumberFormatException, IOException {
+
+		CS5300PROJ1Session session = getSession(cookies);
+
+		// If a new session
+		if (session == null || session.getEnd() == -1) {
+			return session;
+		}
+
+		// Do as the operations asked 
+		// If logout, then just remove the session
+		if (type == REQUEST.LOGOUT) {
+			sessionDataTable.remove(session.getSessionID());
+		} else {
+			if (type == REQUEST.REPLACE) {
+				session.setMessage(message);
+			}
+
+			session.incrementVersion();
+			session.setPrimaryIPP(myIPP);
+			synchronized (memberSet) {
+				if (memberSet.size() == 0) {
+					session.setBackupIPP(null);
+				} else {
+					// Find a backup
+					for (Object o : memberSet.keySet().toArray()) {
+						CS5300PROJ2IPP ipp = (CS5300PROJ2IPP) o;
+						session.setBackupIPP(ipp);
+						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false);
+						session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
+						if (client.write(session, session.getEnd())) {
+							sessionDataTable.put(session.getSessionID(), session);
+							return session;
+						}
+						memberSet.remove(ipp);
+					}
+				}
+			}
+
+			// No backups found
+			session.setBackupIPP(null);
+			session.setEnd((new Date()).getTime() + EXPIRY_TIME_FROM_CURRENT);
+		}
+		return session;
+	}
+
+	private CS5300PROJ1Session getSession(Cookie[] cookies) 
+			throws NumberFormatException, IOException {
 		CS5300PROJ1Session session = null;
+
 		if (cookies != null) {
 			for (Cookie c : cookies) {
 				if (c.getName().equals(CS5300PROJ2Cookie.COOKIE_NAME) && c instanceof CS5300PROJ2Cookie) {
@@ -140,27 +195,35 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 						  the cookie! Make a new cookie now!*/
 							break;
 						}
-
-						// If logout, then just remove the session
-						if (type == REQUEST.LOGOUT) {
-							sessionDataTable.remove(cookieCrisp.getSessionID());
-						} else {
-							session.incrementVersion();
-							session.setEnd((new Date()).getTime() + EXPIRY_TIME_FROM_CURRENT);
-							if (type == REQUEST.REPLACE) {
-								session.setMessage(message);
-							}
-						}
-
-						if (DEBUG) {
-							System.out.println(type + " & Updated: " + session.toString());
-						}
 					} else {
 						// Send a READ request to the primary, then the backup for session object
 						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, true);
 						session = client.read();
-						
+						boolean found_in_first = true;
+
+						// find it in backup
+						if (session == null && cookieCrisp.hasBackupIPP()) {
+							found_in_first = false;
+							client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, false);
+							session = client.read();
+						}
+
+						// If found
+						if (session != null) {
+							synchronized (memberSet) {
+								memberSet.put(client.getIppDest(), client.getCallID());
+
+								// Didn't receive confirmation from the second but 
+								// assumes that second is fine 
+								if (found_in_first) {
+									memberSet.put(cookieCrisp.getBackupIPP(), -1);
+								}
+							}
+						} else {
+							session = new CS5300PROJ1Session();
+						}
 					}
+					break;
 				}
 			}
 		}
@@ -203,14 +266,20 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			HttpServletResponse response, CS5300PROJ1Session session) 
 					throws IOException, ServletException {
 		CS5300PROJ2Cookie cookieToSend;
-		if (type == REQUEST.LOGOUT) {
+
+		// End is when the session state could not be gotten from primary and/or backup
+		if (session.getEnd() == -1 || type == REQUEST.LOGOUT) {
 
 			// Creates a cookie to send to the client to erase all past cookies
 			cookieToSend = new CS5300PROJ2Cookie();
 			cookieToSend.setMaxAge(0);
 			response.addCookie(cookieToSend);
 			PrintWriter out = response.getWriter();
-			out.println("Bye");
+			if (session.getEnd() == -1) {
+				out.println("Sorry but we cannot find the session that you were referring to.");
+			} else {
+				out.println("Bye");
+			}
 		} else {
 			cookieToSend = session.getCookie();
 			cookieToSend.setMaxAge((int) (EXPIRY_TIME_FROM_CURRENT / 1000));
@@ -233,7 +302,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			synchronized(memberSet) {
 				//accessing the set is synched with the hashmap
 				for (CS5300PROJ2IPP member : memberSet.keySet()) {
-				
+
 				}
 			}
 			RequestDispatcher rd = request.getRequestDispatcher("/CS5300PROJ1index.jsp");

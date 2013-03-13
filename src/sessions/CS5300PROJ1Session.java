@@ -19,7 +19,7 @@ public class CS5300PROJ1Session {
 		cookie = c;
 	}
 	
-	/*
+	/**
 	 * Brand new session, only need the uid and my own ipp
 	 */
 	public CS5300PROJ1Session(CS5300PROJ2SessionId sID) {
@@ -27,6 +27,13 @@ public class CS5300PROJ1Session {
 		end = (new Date()).getTime() + CS5300PROJ1Servlet.EXPIRY_TIME_FROM_CURRENT;
 		CS5300PROJ2Location ipps = new CS5300PROJ2Location(sID.getOriginIPP());
 		cookie = new CS5300PROJ2Cookie(sID, 0, ipps);
+	}
+	
+	/**
+	 * Expired or not found session
+	 */
+	public CS5300PROJ1Session() {
+		end = -1;
 	}
 	
 	public CS5300PROJ1Session(String s) {
@@ -79,6 +86,18 @@ public class CS5300PROJ1Session {
 	
 	public void incrementVersion() {
 		cookie.incrementVersion();
+	}
+	
+	public CS5300PROJ2SessionId getSessionID() {
+		return cookie.getSessionID();
+	}
+	
+	public void setPrimaryIPP(CS5300PROJ2IPP ipp) {
+		cookie.getLocation().setPrimaryIPP(ipp);
+	}
+	
+	public void setBackupIPP(CS5300PROJ2IPP ipp) {
+		cookie.getLocation().setBackupIPP(ipp);
 	}
 
 	/**

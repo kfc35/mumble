@@ -33,7 +33,7 @@ public class CS5300PROJ2RPCClient {
 
 	public CS5300PROJ2RPCClient(int callID, CS5300PROJ2Cookie cookie, boolean primary) throws 
 			NumberFormatException, SocketException, UnknownHostException {
-		this(callID, primary ? cookie.getPrimaryLocation() : cookie.getBackupLocation(), 
+		this(callID, primary ? cookie.getPrimaryIPP() : cookie.getBackupIPP(), 
 				cookie.getSessionID(), cookie.getVersion());
 	}
 
@@ -92,5 +92,36 @@ public class CS5300PROJ2RPCClient {
 		return recvM;
 	}
 
+	public int getCallID() {
+		return callID;
+	}
+
+	public void setCallID(int callID) {
+		this.callID = callID;
+	}
+
+	public CS5300PROJ2IPP getIppDest() {
+		return ippDest;
+	}
+
+	public void setIppDest(CS5300PROJ2IPP ippDest) {
+		this.ippDest = ippDest;
+	}
+
+	public CS5300PROJ2SessionId getSessionID() {
+		return sessionID;
+	}
+
+	public void setSessionID(CS5300PROJ2SessionId sessionID) {
+		this.sessionID = sessionID;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
 
 }
