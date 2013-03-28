@@ -2,14 +2,10 @@ package sessions;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.RequestDispatcher;
@@ -18,8 +14,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 import rpc.CS5300PROJ2RPCClient;
 import rpc.CS5300PROJ2RPCServer;
@@ -79,6 +73,9 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
+		if (CRASH) {
+			return;
+		}
 		CS5300PROJ1Session session = null;
 		/*Process session information if applicable*/
 
@@ -98,6 +95,13 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
+		if (CRASH) {
+			return;
+		}
+		else if (request.getParameter("Crash") != null) {
+			CRASH = true;
+			return; 
+		}
 		CS5300PROJ1Session session = null;
 		@SuppressWarnings("unchecked")
 		Enumeration<String> params = request.getParameterNames();
@@ -112,6 +116,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 				type = REQUEST.REPLACE;
 			}
 		}
+		
 		synchronized (sessionDataTable) {
 			session = execute(request.getCookies(), type, message);
 			if (null == session && type == REQUEST.REPLACE) {
@@ -156,7 +161,9 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 			session.incrementVersion();
 			session.setPrimaryIPP(myIPP);
-			synchronized (memberSet) {
+			synchronized (memberSet) { 
+				//TODO what if it already has a backup though? don't you try writing
+				//to that first before you choose a new backup?
 				if (memberSet.size() == 0) {
 					session.setBackupIPP(null);
 				} else {
@@ -167,6 +174,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
 						session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
 						if (client.write(session, session.getEnd())) {
+							//TODO access to sessionDataTable should be sync?
 							sessionDataTable.put(session.getSessionID(), session);
 							return session;
 						}
@@ -177,7 +185,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 			// No backups found
 			session.setBackupIPP(null);
-			session.setEnd((new Date()).getTime() + EXPIRY_TIME_FROM_CURRENT);
+			session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
 		}
 		return session;
 	}
@@ -243,12 +251,35 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	 * @param m - message
 	 * Create a new session and add it to the session table
 	 * @return session
+	 * @throws NumberFormatException 
+	 * @throws IOException 
 	 */
-	private CS5300PROJ1Session createSession() {
+	private CS5300PROJ1Session createSession() throws NumberFormatException, IOException {
 		CS5300PROJ2SessionId sid = new CS5300PROJ2SessionId(numSessions++, myIPP);
 		CS5300PROJ1Session session = new CS5300PROJ1Session(sid);
 
-		//TODO need to send out messages to the other memberSets is there are any
+		//TODO i just c/p'ed this from above because i need to find a backup
+		//for the newly created session...
+		synchronized (memberSet) {
+			if (memberSet.size() == 0) {
+				session.setBackupIPP(null);
+			} else {
+				// Find a backup
+				for (Object o : memberSet.keySet().toArray()) {
+					CS5300PROJ2IPP ipp = (CS5300PROJ2IPP) o;
+					session.setBackupIPP(ipp);
+					CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
+					session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
+					if (client.write(session, session.getEnd())) {
+						//TODO access to sessionDataTable should be sync?
+						sessionDataTable.put(session.getSessionID(), session);
+						return session;
+					}
+					memberSet.remove(ipp);
+				}
+			}
+		}
+		
 		if (DEBUG) {
 			System.out.println("Created a New Session: " + session.toString());
 		}

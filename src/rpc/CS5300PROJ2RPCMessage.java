@@ -201,4 +201,13 @@ public class CS5300PROJ2RPCMessage {
 		this.session = s;
 	}
 
+	public String getPort() {
+		return port;
+	}
+
+
+	public void setPort(String port) {
+		this.port = port;
+	}
+
 }

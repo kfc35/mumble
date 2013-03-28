@@ -52,7 +52,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 	
 	@Override
 	public synchronized void run() {
-		while(true) {
+		while(!CS5300PROJ1Servlet.CRASH) {
 			byte[] inBuf = new byte[512];
 			DatagramPacket recvPkt = new DatagramPacket(inBuf, inBuf.length);
 			try {
@@ -62,6 +62,9 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					e.printStackTrace();
 				}
 				continue; //just drop this packet
+			}
+			if (CS5300PROJ1Servlet.CRASH) { //put here because receive blocks
+				break;
 			}
 			InetAddress returnAddr = recvPkt.getAddress();
 			int returnPort = recvPkt.getPort();
@@ -73,7 +76,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				e1.printStackTrace();
 			}
 			CS5300PROJ2RPCMessage msg = new CS5300PROJ2RPCMessage(msgString);
-			CS5300PROJ2IPP recvIPP = new CS5300PROJ2IPP(returnAddr.getHostAddress(), returnPort + "");
+			CS5300PROJ2IPP recvIPP = new CS5300PROJ2IPP(returnAddr.getHostAddress(), msg.getPort());
 			CS5300PROJ2RPCMessage returnMsg = null;
 			switch (msg.getOpt()) {
 				case READ:
@@ -102,8 +105,6 @@ public class CS5300PROJ2RPCServer implements Runnable{
 							memberSet.put(location.getBackupIPP(), -1);
 						}
 					}
-					//TODO i may have to do more here than this...
-					//E.g. "GARBAGE COLLECT" pre-existing session
 					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.WRITE, msg.getCallID(), 1, getLocalPort());
 					break;
 					
@@ -143,6 +144,9 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				DatagramPacket sendPacket = 
 						new DatagramPacket(bytes, 512, returnAddr, returnPort);
 				try {
+					if (CS5300PROJ1Servlet.CRASH) {
+						break;
+					}
 					rpcSocket.send(sendPacket);
 				} catch (IOException e) {
 					if (CS5300PROJ1Servlet.DEBUG) {
@@ -152,5 +156,6 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				}
 			}
 		}
+		rpcSocket.close();
 	}
 }

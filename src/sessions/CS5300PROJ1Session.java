@@ -24,7 +24,8 @@ public class CS5300PROJ1Session {
 	 */
 	public CS5300PROJ1Session(CS5300PROJ2SessionId sID) {
 		message = CS5300PROJ1Servlet.DEFAULT_MESSAGE;
-		end = (new Date()).getTime() + CS5300PROJ1Servlet.EXPIRY_TIME_FROM_CURRENT;
+		//TODO discard vs expiry discussion... it's weird
+		end = (new Date()).getTime() + CS5300PROJ1Servlet.DISCARD_TIME_FROM_CURRENT;
 		CS5300PROJ2Location ipps = new CS5300PROJ2Location(sID.getOriginIPP());
 		cookie = new CS5300PROJ2Cookie(sID, 0, ipps);
 	}
