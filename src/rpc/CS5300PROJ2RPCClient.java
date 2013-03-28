@@ -20,8 +20,9 @@ public class CS5300PROJ2RPCClient {
 	private CS5300PROJ2IPP ippDest;
 	private CS5300PROJ2SessionId sessionID;
 	private int version;
+	private String port;
 
-	public CS5300PROJ2RPCClient(int callID, CS5300PROJ2IPP ipp, CS5300PROJ2SessionId sessionID, int i) 
+	public CS5300PROJ2RPCClient(int callID, CS5300PROJ2IPP ipp, CS5300PROJ2SessionId sessionID, int i, String p) 
 					throws SocketException, NumberFormatException, UnknownHostException {
 		rpcSocket = new DatagramSocket();
 		rpcSocket.setSoTimeout(CS5300PROJ2RPCMessage.RPC_TIMEOUT);
@@ -29,18 +30,19 @@ public class CS5300PROJ2RPCClient {
 		this.callID = callID;
 		this.sessionID = sessionID;
 		this.version = i;
+		this.port = p;
 	}
 
-	public CS5300PROJ2RPCClient(int callID, CS5300PROJ2Cookie cookie, boolean primary) throws 
+	public CS5300PROJ2RPCClient(int callID, CS5300PROJ2Cookie cookie, boolean primary, String p) throws 
 			NumberFormatException, SocketException, UnknownHostException {
 		this(callID, primary ? cookie.getPrimaryIPP() : cookie.getBackupIPP(), 
-				cookie.getSessionID(), cookie.getVersion());
+				cookie.getSessionID(), cookie.getVersion(), p);
 	}
 
 	public CS5300PROJ1Session read() 
 			throws NumberFormatException, IOException {
 		CS5300PROJ2RPCMessage recv = sendAndReceive(
-				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.READ, callID, sessionID, version), true);
+				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.READ, callID, sessionID, version, port), true);
 		if (recv == null) {
 			return null;
 		}
@@ -50,14 +52,14 @@ public class CS5300PROJ2RPCClient {
 	public boolean write(CS5300PROJ1Session session, long discardTime) 
 			throws NumberFormatException, IOException {
 		CS5300PROJ2RPCMessage recv = sendAndReceive(
-				new CS5300PROJ2RPCMessage(callID, sessionID, version, session, discardTime), false);
+				new CS5300PROJ2RPCMessage(callID, sessionID, version, session, discardTime, port), false);
 		return (recv.getVersion() == 1);
 	}
 
 	public CS5300PROJ2RPCMessage delete() 
 			throws NumberFormatException, IOException {
 		return sendAndReceive(
-				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.DELETE, callID, sessionID, version), false);
+				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.DELETE, callID, sessionID, version, port), false);
 	}
 
 	private CS5300PROJ2RPCMessage sendAndReceive(CS5300PROJ2RPCMessage m, boolean twice) 

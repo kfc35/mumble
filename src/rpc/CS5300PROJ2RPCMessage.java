@@ -15,6 +15,7 @@ public class CS5300PROJ2RPCMessage {
 	private int version; // -1 for not found, 1 for acknowledgment in Write/Delete return
 	private CS5300PROJ1Session session;
 	private long discardTime;
+	private String port;
 	
 	public static int RPC_TIMEOUT = 3000;
 	
@@ -24,7 +25,7 @@ public class CS5300PROJ2RPCMessage {
 	 * Generic for all types of messages 
 	 */
 	public CS5300PROJ2RPCMessage(TYPE t, OPT o, int cID, CS5300PROJ2SessionId sID, int v, 
-			CS5300PROJ1Session s, long dTime) {
+			CS5300PROJ1Session s, long dTime, String p) {
 		opt = o;
 		type = t;
 		callID = cID;
@@ -32,6 +33,7 @@ public class CS5300PROJ2RPCMessage {
 		version = v;
 		discardTime = dTime;
 		session = s;
+		port = p;
 	}
 	
 	
@@ -39,7 +41,7 @@ public class CS5300PROJ2RPCMessage {
 	 * Send for session write
 	 */
 	public CS5300PROJ2RPCMessage(int cID, CS5300PROJ2SessionId sID, int v, 
-			CS5300PROJ1Session s, long dTime) {
+			CS5300PROJ1Session s, long dTime, String p) {
 		opt = OPT.WRITE;
 		type = TYPE.SEND;
 		callID = cID;
@@ -47,38 +49,42 @@ public class CS5300PROJ2RPCMessage {
 		version = v;
 		session = s;
 		discardTime = dTime;
+		port = p;
 	}
 	
 	/**
 	 * Receive for session read
 	 */
-	public CS5300PROJ2RPCMessage(int cID, int v, CS5300PROJ1Session s) {
+	public CS5300PROJ2RPCMessage(int cID, int v, CS5300PROJ1Session s, String p) {
 		opt = OPT.READ;
 		type = TYPE.RECEIVE;
 		callID = cID;
 		version = v;
 		session = s;
+		port = p;
 	}
 	
 	/**
 	 *  Send for read and delete
 	 */
-	public CS5300PROJ2RPCMessage(OPT o, int cID, CS5300PROJ2SessionId sID, int v) {
+	public CS5300PROJ2RPCMessage(OPT o, int cID, CS5300PROJ2SessionId sID, int v, String p) {
 		opt = o;
 		type = TYPE.SEND;
 		callID = cID;
 		sessionID = sID;
 		version = v;
+		port = p;
 	}
 	
 	/**
 	 *  Receive for write and delete
 	 */
-	public CS5300PROJ2RPCMessage(OPT o, int cID, int v) {
+	public CS5300PROJ2RPCMessage(OPT o, int cID, int v, String p) {
 		type = TYPE.RECEIVE;
 		opt = o;
 		callID = cID;
 		version = v;
+		port = p;
 	}
 	
 	/**
@@ -87,24 +93,25 @@ public class CS5300PROJ2RPCMessage {
 	 */
 	public CS5300PROJ2RPCMessage(String m) {
 		String[] args = m.split("~");
-		if (args.length < 4) 
+		if (args.length < 5) 
 			return; // error case
 		
 		opt = OPT.valueOf(args[1]);
 		callID = Integer.parseInt(args[2]);
+		port = args[3];
 		if (args[0].equals("RECEIVE")) { // Receiving message
 			type = TYPE.RECEIVE;
-			version = Integer.parseInt(args[3]);
+			version = Integer.parseInt(args[4]);
 			if (opt == OPT.READ) {
-				session = new CS5300PROJ1Session(args[4]);
+				session = new CS5300PROJ1Session(args[5]);
 			}
 		} else {
 			type = TYPE.SEND;
-			sessionID = new CS5300PROJ2SessionId(args[3]);
-			version = Integer.parseInt(args[4]);
+			sessionID = new CS5300PROJ2SessionId(args[4]);
+			version = Integer.parseInt(args[5]);
 			if (opt == OPT.WRITE) {
-				discardTime = Long.parseLong(args[5]);
-				session = new CS5300PROJ1Session(args[6]);
+				discardTime = Long.parseLong(args[6]);
+				session = new CS5300PROJ1Session(args[7]);
 			}
 		}
 	}
@@ -114,19 +121,20 @@ public class CS5300PROJ2RPCMessage {
 		sb.append(type).append("~"); //0
 		sb.append(opt).append("~");
 		sb.append(callID).append("~"); //2
+		sb.append(port).append("~"); //3
 		
 		if (type == TYPE.RECEIVE) {
-			sb.append(version); //3
+			sb.append(version); //4
 			if (opt == OPT.READ) {
 				//TODO session null case!!
-				sb.append("~").append(session.toString()); //4
+				sb.append("~").append(session.toString()); //5
 			} 
 		} else {
-			sb.append(sessionID.toString()).append(":"); //3
-			sb.append(version); //4
+			sb.append(sessionID.toString()).append(":"); //4
+			sb.append(version); //5
 			if (opt == OPT.WRITE) {
-				sb.append("~").append(discardTime); //5
-				sb.append("~").append(session.toString()); //6
+				sb.append("~").append(discardTime); //6
+				sb.append("~").append(session.toString()); //7
 			}
 		}
 		return sb.toString();

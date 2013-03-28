@@ -164,7 +164,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 					for (Object o : memberSet.keySet().toArray()) {
 						CS5300PROJ2IPP ipp = (CS5300PROJ2IPP) o;
 						session.setBackupIPP(ipp);
-						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false);
+						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
 						session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
 						if (client.write(session, session.getEnd())) {
 							sessionDataTable.put(session.getSessionID(), session);
@@ -203,14 +203,14 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 						}
 					} else {
 						// Send a READ request to the primary, then the backup for session object
-						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, true);
+						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, true, rpcServerObj.getLocalPort());
 						session = client.read();
 						boolean found_in_first = true;
 
 						// find it in backup
 						if (session == null && cookieCrisp.hasBackupIPP()) {
 							found_in_first = false;
-							client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, false);
+							client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, false, rpcServerObj.getLocalPort());
 							session = client.read();
 						}
 

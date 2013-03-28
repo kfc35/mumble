@@ -46,6 +46,10 @@ public class CS5300PROJ2RPCServer implements Runnable{
 		return this.rpcSocket.getLocalAddress().getHostAddress();
 	}
 	
+	public boolean failed() {
+		return this.rpcSocket == null;
+	}
+	
 	@Override
 	public synchronized void run() {
 		while(true) {
@@ -69,8 +73,6 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				e1.printStackTrace();
 			}
 			CS5300PROJ2RPCMessage msg = new CS5300PROJ2RPCMessage(msgString);
-			//TODO we need to change this port... we modify the message class.
-			//According to section 3.8a
 			CS5300PROJ2IPP recvIPP = new CS5300PROJ2IPP(returnAddr.getHostAddress(), returnPort + "");
 			CS5300PROJ2RPCMessage returnMsg = null;
 			switch (msg.getOpt()) {
@@ -80,10 +82,10 @@ public class CS5300PROJ2RPCServer implements Runnable{
 						sess = sessionDataTable.get(msg.getSessionID());
 					}
 					if (sess == null) {
-						returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), -123, null);
+						returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), -123, null, getLocalPort());
 					}
 					else {
-						returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), sess.getVersion(), sess);
+						returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), sess.getVersion(), sess, getLocalPort());
 					}
 					break;
 					
@@ -102,14 +104,14 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					}
 					//TODO i may have to do more here than this...
 					//E.g. "GARBAGE COLLECT" pre-existing session
-					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.WRITE, msg.getCallID(), 1);
+					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.WRITE, msg.getCallID(), 1, getLocalPort());
 					break;
 					
 				case DELETE:
 					synchronized(sessionDataTable) {
 						sessionDataTable.remove(msg.getSessionID());
 					}
-					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.DELETE, msg.getCallID(), 1);
+					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.DELETE, msg.getCallID(), 1, getLocalPort());
 					break;
 				
 				default:
