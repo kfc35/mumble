@@ -162,8 +162,6 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			session.incrementVersion();
 			session.setPrimaryIPP(myIPP);
 			synchronized (memberSet) { 
-				//TODO what if it already has a backup though? don't you try writing
-				//to that first before you choose a new backup?
 				if (memberSet.size() == 0) {
 					session.setBackupIPP(null);
 				} else {
@@ -174,7 +172,6 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
 						session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
 						if (client.write(session, session.getEnd())) {
-							//TODO access to sessionDataTable should be sync?
 							sessionDataTable.put(session.getSessionID(), session);
 							return session;
 						}
@@ -201,7 +198,6 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 					// if IPP local is either Primary or backup
 					if (cookieCrisp.equalsEitherLocation(myIPP)) {
-						//TODO sweet doesn't this need to be synchronized?
 						session = sessionDataTable.get(cookieCrisp.getSessionID());
 						if (session == null) { 
 							/*this can happen if you stop the servlet, clearing the
@@ -258,8 +254,6 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 		CS5300PROJ2SessionId sid = new CS5300PROJ2SessionId(numSessions++, myIPP);
 		CS5300PROJ1Session session = new CS5300PROJ1Session(sid);
 
-		//TODO i just c/p'ed this from above because i need to find a backup
-		//for the newly created session...
 		synchronized (memberSet) {
 			if (memberSet.size() == 0) {
 				session.setBackupIPP(null);
@@ -271,7 +265,6 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 					CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
 					session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
 					if (client.write(session, session.getEnd())) {
-						//TODO access to sessionDataTable should be sync?
 						sessionDataTable.put(session.getSessionID(), session);
 						return session;
 					}
