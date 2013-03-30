@@ -108,7 +108,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				case R:
 					CS5300PROJ1Session sess = null;
 					synchronized(sessionDataTable) {
-						sess = sessionDataTable.get(msg.getSessionID().toString());
+						sess = sessionDataTable.get(msg.getSession().getSessionID().toString());
 					}
 					if (sess == null) {
 						returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), -123, null, getLocalPort());
@@ -120,7 +120,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					
 				case W:
 					synchronized(sessionDataTable) {
-						sessionDataTable.put(msg.getSessionID().toString(), msg.getSession());
+						sessionDataTable.put(msg.getSession().getSessionID().toString(), msg.getSession());
 					}
 					CS5300PROJ2Location location = msg.getSession().getCookie().getLocation();
 					synchronized(memberSet) {
@@ -138,7 +138,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					
 				case D:
 					synchronized(sessionDataTable) {
-						sessionDataTable.remove(msg.getSessionID().toString());
+						sessionDataTable.remove(msg.getSession().getSessionID().toString());
 					}
 					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.D, msg.getCallID(), 1, getLocalPort());
 					break;
