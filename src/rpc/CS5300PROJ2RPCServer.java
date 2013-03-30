@@ -166,6 +166,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 			if (returnMsg != null) {
 				byte[] bytes = null;
 				try {
+					System.out.println(returnMsg);
 					bytes = returnMsg.toBytes();
 				} catch (UnsupportedEncodingException e) {
 					// this should NEVER happen.

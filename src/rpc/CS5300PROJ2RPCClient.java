@@ -59,10 +59,15 @@ public class CS5300PROJ2RPCClient {
 		return (recv.getVersion() == 1);
 	}
 
-	public CS5300PROJ2RPCMessage delete() 
+	public boolean delete() 
 			throws NumberFormatException, IOException {
-		return sendAndReceive(
-				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.D, callID, sessionID, version, port), false);
+		CS5300PROJ2RPCMessage recv = sendAndReceive(
+				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.DELETE, callID, sessionID, version, port), false);
+		
+		if (recv == null) {
+			return false;
+		}
+		return (recv.getVersion() == 1);
 	}
 
 	private CS5300PROJ2RPCMessage sendAndReceive(CS5300PROJ2RPCMessage m, boolean twice) 
