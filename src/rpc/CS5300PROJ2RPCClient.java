@@ -21,6 +21,7 @@ public class CS5300PROJ2RPCClient {
 	private CS5300PROJ2SessionId sessionID;
 	private int version;
 	private String port;
+	private boolean responded = false;
 
 	public CS5300PROJ2RPCClient(int callID, CS5300PROJ2IPP ipp, CS5300PROJ2SessionId sessionID, int i, String p) 
 			throws SocketException, NumberFormatException, UnknownHostException {
@@ -86,6 +87,7 @@ public class CS5300PROJ2RPCClient {
 			do {
 				recvPacket.setLength(inBuf.length);
 				rpcSocket.receive(recvPacket);
+				responded = true;
 				String s = new String(inBuf, 0, 512, "UTF-8");
 				System.out.println("Gets the string from message: " + s);
 				recvM = new CS5300PROJ2RPCMessage(s);
@@ -130,6 +132,10 @@ public class CS5300PROJ2RPCClient {
 
 	public void setVersion(int version) {
 		this.version = version;
+	}
+	
+	public boolean getResponded() {
+		return responded;
 	}
 
 }

@@ -251,27 +251,27 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 						// Send a READ request to the primary, then the backup for session object
 						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, true, rpcServerObj.getLocalPort());
 						session = client.read();
-						boolean found_in_first = true;
-
-						// find it in backup
-						if (session == null && cookieCrisp.hasBackupIPP()) {
-							found_in_first = false;
-							client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, false, rpcServerObj.getLocalPort());
-							session = client.read();
-						}
-
-						// If found
-						if (session != null) {
+						if (client.getResponded()) { // If there's a response from the first
 							synchronized (memberSet) {
 								memberSet.put(client.getIppDest().toString(), client.getCallID());
-
-								// Didn't receive confirmation from the second but 
-								// assumes that second is fine 
-								if (found_in_first && cookieCrisp.hasBackupIPP()) {
+								if (cookieCrisp.hasBackupIPP()) {
 									memberSet.put(cookieCrisp.getBackupIPP().toString(), -1);
 								}
 							}
-						} else {
+						} 
+						
+						if (session == null && cookieCrisp.hasBackupIPP()) { // there's a backup to send to
+							client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, false, rpcServerObj.getLocalPort());
+							session = client.read();
+							
+							if (client.getResponded()) {
+								synchronized (memberSet) {
+									memberSet.put(client.getIppDest().toString(), client.getCallID());
+								}
+							}
+						} 
+						
+						if (session == null) { //Create a new session
 							session = new CS5300PROJ1Session();
 						}
 					}

@@ -185,7 +185,7 @@ public class CS5300PROJ2RPCMessage {
 					sb.append("~").append(session); //4
 				}
 			} else {
-				sb.append(version);
+				sb.append("~").append(version);
 			}
 		} else {
 			if (opt == OPT.W) {
