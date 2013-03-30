@@ -108,7 +108,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				case R:
 					CS5300PROJ1Session sess = null;
 					synchronized(sessionDataTable) {
-						sess = sessionDataTable.get(msg.getSession().getSessionID().toString());
+						sess = sessionDataTable.get(msg.getSessionID().toString());
 					}
 					if (sess == null) {
 						returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), -123, null, getLocalPort());
@@ -138,7 +138,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					
 				case D:
 					synchronized(sessionDataTable) {
-						sessionDataTable.remove(msg.getSession().getSessionID().toString());
+						sessionDataTable.remove(msg.getSessionID().toString());
 					}
 					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.D, msg.getCallID(), 1, getLocalPort());
 					break;
