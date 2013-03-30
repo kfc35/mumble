@@ -110,7 +110,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				case READ:
 					CS5300PROJ1Session sess = null;
 					synchronized(sessionDataTable) {
-						sess = sessionDataTable.get(msg.getSessionID());
+						sess = sessionDataTable.get(msg.getSessionID().toString());
 					}
 					if (sess == null) {
 						returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), -123, null, getLocalPort());
@@ -126,11 +126,11 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					}
 					CS5300PROJ2Location location = msg.getSession().getCookie().getLocation();
 					synchronized(memberSet) {
-						if (!memberSet.containsKey(location.getPrimaryIPP()) && 
+						if (!memberSet.containsKey(location.getPrimaryIPP().toString()) && 
 								!location.getPrimaryIPP().equals(new CS5300PROJ2IPP(this.getLocalAddress(), this.getLocalPort()))) {
 							memberSet.put(location.getPrimaryIPP().toString(), -1);
 						}
-						if (location.getBackupIPP() != null && !memberSet.containsKey(location.getBackupIPP()) &&
+						if (location.getBackupIPP() != null && !memberSet.containsKey(location.getBackupIPP().toString()) &&
 								!location.getBackupIPP().equals(new CS5300PROJ2IPP(this.getLocalAddress(), this.getLocalPort()))) {
 							memberSet.put(location.getBackupIPP().toString(), -1);
 						}
@@ -140,7 +140,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					
 				case DELETE:
 					synchronized(sessionDataTable) {
-						sessionDataTable.remove(msg.getSessionID());
+						sessionDataTable.remove(msg.getSessionID().toString());
 					}
 					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.DELETE, msg.getCallID(), 1, getLocalPort());
 					break;
