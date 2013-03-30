@@ -185,7 +185,7 @@ public class CS5300PROJ2RPCMessage {
 				if (session == null) {
 					sb.append("~").append("null");
 				} else {
-					sb.append("~").append(session.getMessage()); //5
+					sb.append("~").append(session); //5
 				}
 			} 
 		} else {
