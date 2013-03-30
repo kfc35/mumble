@@ -106,7 +106,11 @@ public class CS5300PROJ2RPCMessage {
 			type = TYPE.RECEIVE;
 			version = Integer.parseInt(args[4]);
 			if (opt == OPT.READ) {
+				if (args[5].toLowerCase().equals("null")) {
+					session = null;
+				} else {
 				session = new CS5300PROJ1Session(args[5]);
+				}
 			}
 		} else {
 			type = TYPE.SEND;
@@ -114,7 +118,11 @@ public class CS5300PROJ2RPCMessage {
 			version = Integer.parseInt(args[6]);
 			if (opt == OPT.WRITE) {
 				discardTime = Long.parseLong(args[7]);
+				if (args[8].toLowerCase().equals("null")) {
+					session = null;
+				} else {
 				session = new CS5300PROJ1Session(args[8]);
+				}
 			}
 		}
 	}
@@ -130,7 +138,11 @@ public class CS5300PROJ2RPCMessage {
 			sb.append(version); //4
 			if (opt == OPT.READ) {
 				//TODO session null case!!
+				if (session == null) {
+					sb.append("~").append("null");
+				} else {
 				sb.append("~").append(session.toString()); //5
+				}
 			} 
 		} else {
 			sb.append(sessionID.toString()).append("~"); //4
