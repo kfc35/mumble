@@ -278,8 +278,8 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 				session.setBackupIPP(null);
 			} else {
 				// Find a backup
-				for (Object o : memberSet.keySet().toArray()) {
-					CS5300PROJ2IPP ipp = (CS5300PROJ2IPP) o;
+				for (Entry<String, Integer> entry: memberSet.entrySet()) {
+					CS5300PROJ2IPP ipp = new CS5300PROJ2IPP(entry.getKey());
 					session.setBackupIPP(ipp);
 					CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
 					session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
