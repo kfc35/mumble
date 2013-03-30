@@ -175,13 +175,19 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			sessionDataTable.remove(session.getSessionID());
 			
 			//Remove from the primary and backup if applicable
-			CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), true, rpcServerObj.getLocalPort());
-			if (!client.delete()) {
-				synchronized(memberSet) {
-					memberSet.remove(client.getIppDest().toString());
+			CS5300PROJ2RPCClient client;
+			
+			if (!session.getCookie().getPrimaryIPP().equals(myIPP)) {
+				client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), true, rpcServerObj.getLocalPort());
+				if (!client.delete()) {
+					synchronized(memberSet) {
+						memberSet.remove(client.getIppDest().toString());
+					}
 				}
 			}
-			if (session.getCookie().getBackupIPP() != null) {
+			
+			if (session.getCookie().getBackupIPP() != null &&
+					!session.getCookie().getBackupIPP().equals(myIPP)) {
 				client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
 				if (!client.delete()) {
 					synchronized (memberSet) {
@@ -189,6 +195,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 					}
 				}
 			}
+
 		} else {
 			if (type == REQUEST.REPLACE) {
 				session.setMessage(message);
