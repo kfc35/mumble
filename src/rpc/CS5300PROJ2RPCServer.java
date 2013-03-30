@@ -5,8 +5,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.net.Inet4Address;
+import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
 import sessions.CS5300PROJ1Servlet;
@@ -43,14 +47,29 @@ public class CS5300PROJ2RPCServer implements Runnable{
 	}
 	
 	public String getLocalAddress() {
-		InetAddress ip;
+		Enumeration<NetworkInterface> interfaces = null;
 		try {
-			ip = InetAddress.getLocalHost();
-		} catch (UnknownHostException e) {
+			interfaces = NetworkInterface.getNetworkInterfaces();
+		} catch (SocketException e) {
 			e.printStackTrace();
-			return null;
 		}
-		return ip.getHostAddress();
+		if (interfaces == null) return "";
+		while (interfaces.hasMoreElements()){
+		    NetworkInterface current = interfaces.nextElement();
+		    try {
+				if (!current.isUp() || current.isLoopback() || current.isVirtual()) continue;
+			} catch (SocketException e) {
+				e.printStackTrace();
+				continue;
+			}
+		    Enumeration<InetAddress> addresses = current.getInetAddresses();
+		    while (addresses.hasMoreElements()){
+		        InetAddress current_addr = addresses.nextElement();
+		        if (current_addr.isLoopbackAddress()) continue;
+		        if (current_addr instanceof Inet4Address) return current_addr.getHostAddress();
+		    }
+		}
+		return "";
 	}
 	
 	public boolean failed() {
