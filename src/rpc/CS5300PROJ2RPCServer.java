@@ -131,7 +131,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 							memberSet.put(location.getPrimaryIPP().toString(), -1);
 						}
 						if (location.getBackupIPP() != null && !memberSet.containsKey(location.getBackupIPP()) &&
-								!location.getPrimaryIPP().equals(new CS5300PROJ2IPP(this.getLocalAddress(), this.getLocalPort()))) {
+								!location.getBackupIPP().equals(new CS5300PROJ2IPP(this.getLocalAddress(), this.getLocalPort()))) {
 							memberSet.put(location.getBackupIPP().toString(), -1);
 						}
 					}
