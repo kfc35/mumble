@@ -107,7 +107,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 			System.out.println(recvIPP);
 			CS5300PROJ2RPCMessage returnMsg = null;
 			switch (msg.getOpt()) {
-				case READ:
+				case R:
 					CS5300PROJ1Session sess = null;
 					synchronized(sessionDataTable) {
 						sess = sessionDataTable.get(msg.getSessionID().toString());
@@ -120,7 +120,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					}
 					break;
 					
-				case WRITE:
+				case W:
 					synchronized(sessionDataTable) {
 						sessionDataTable.put(msg.getSessionID().toString(), msg.getSession());
 					}
@@ -135,14 +135,14 @@ public class CS5300PROJ2RPCServer implements Runnable{
 							memberSet.put(location.getBackupIPP().toString(), -1);
 						}
 					}
-					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.WRITE, msg.getCallID(), 1, getLocalPort());
+					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.W, msg.getCallID(), 1, getLocalPort());
 					break;
 					
-				case DELETE:
+				case D:
 					synchronized(sessionDataTable) {
 						sessionDataTable.remove(msg.getSessionID().toString());
 					}
-					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.DELETE, msg.getCallID(), 1, getLocalPort());
+					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.D, msg.getCallID(), 1, getLocalPort());
 					break;
 				
 				default:

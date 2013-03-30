@@ -42,7 +42,7 @@ public class CS5300PROJ2RPCClient {
 	public CS5300PROJ1Session read() 
 			throws NumberFormatException, IOException {
 		CS5300PROJ2RPCMessage recv = sendAndReceive(
-				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.READ, callID, sessionID, version, port), true);
+				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.R, callID, sessionID, version, port), true);
 		if (recv == null) {
 			return null;
 		}
@@ -62,7 +62,7 @@ public class CS5300PROJ2RPCClient {
 	public CS5300PROJ2RPCMessage delete() 
 			throws NumberFormatException, IOException {
 		return sendAndReceive(
-				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.DELETE, callID, sessionID, version, port), false);
+				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.D, callID, sessionID, version, port), false);
 	}
 
 	private CS5300PROJ2RPCMessage sendAndReceive(CS5300PROJ2RPCMessage m, boolean twice) 
@@ -81,7 +81,9 @@ public class CS5300PROJ2RPCClient {
 			do {
 				recvPacket.setLength(inBuf.length);
 				rpcSocket.receive(recvPacket);
-				recvM = new CS5300PROJ2RPCMessage(new String(inBuf, 0, 512, "UTF-8"));
+				String s = new String(inBuf, 0, 512, "UTF-8");
+				System.out.println("Gets the string from message: " + s);
+				recvM = new CS5300PROJ2RPCMessage(s);
 			} while (recvM != null && recvM.getCallID() != m.getCallID());
 		} catch (InterruptedIOException iioe) {
 			recvM = null; // Set it back to a null

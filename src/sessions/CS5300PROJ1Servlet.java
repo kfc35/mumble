@@ -244,7 +244,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 								// Didn't receive confirmation from the second but 
 								// assumes that second is fine 
-								if (found_in_first) {
+								if (found_in_first && cookieCrisp.hasBackupIPP()) {
 									memberSet.put(cookieCrisp.getBackupIPP().toString(), -1);
 								}
 							}

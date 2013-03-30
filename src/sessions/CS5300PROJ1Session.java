@@ -36,6 +36,7 @@ public class CS5300PROJ1Session {
 	}
 	
 	public CS5300PROJ1Session(String s) {
+		System.out.println("Trying to create a session with the string: " + s);
 		String[] args = s.split("~", 5);
 		/*
 		 * Splits into 
