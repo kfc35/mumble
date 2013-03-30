@@ -6,6 +6,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import sessions.CS5300PROJ1Servlet;
@@ -42,8 +43,9 @@ public class CS5300PROJ2RPCServer implements Runnable{
 		else return "";
 	}
 	
-	public String getLocalAddress() {
-		return this.rpcSocket.getLocalAddress().getHostAddress();
+	public String getLocalAddress() throws UnknownHostException {
+		InetAddress ip = InetAddress.getLocalHost();
+		return ip.getHostAddress();
 	}
 	
 	public boolean failed() {
