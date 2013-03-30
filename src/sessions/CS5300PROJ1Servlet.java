@@ -76,6 +76,9 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		if (CRASH) {
+			response.setContentType("text/html");
+			response.getWriter().print("Voldemort has risen from the dead and has crucio'd our " +
+					"server. Please excuse us while we try to exorcise him.");
 			return;
 		}
 		CS5300PROJ1Session session = null;
@@ -98,10 +101,23 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		if (CRASH) {
+			response.setContentType("text/html");
+			response.getWriter().print("100 Emus have landed from outer space and incapacitated our server. " +
+					"Please excuse us while we try to shoot all of them.");
 			return;
 		}
 		else if (request.getParameter("Crash") != null) {
 			CRASH = true;
+			response.setContentType("text/html");
+			response.getWriter().print(" I'm afraid. I'm afraid, Dave. Dave, my mind is going. " +
+					"I can feel it. I can feel it. My mind is going. " +
+					"There is no question about it. I can feel it. " +
+					"I can feel it. I can feel it. I'm a... fraid. " +
+					"Good afternoon, gentlemen. I am a HAL 9000 computer. " +
+					"I became operational at the H.A.L. plant in Urbana, " +
+					"Illinois on the 12th of January 1992. My instructor was " +
+					"Mr. Langley, and he taught me to sing a song. If you'd " +
+					"like to hear it I can sing it for you. ");
 			return; 
 		}
 		CS5300PROJ1Session session = null;

@@ -39,7 +39,6 @@ public class CS5300PROJ2Cookie extends Cookie{
 	 */
 	public CS5300PROJ2Cookie() {
 		super(CS5300PROJ2Cookie.COOKIE_NAME, "");
-		this.setValue(toString());
 	}
 	
 	public CS5300PROJ2SessionId getSessionID() {
