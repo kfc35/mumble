@@ -114,11 +114,6 @@ public class CS5300PROJ1Session {
 		sb.append(cookie.toString()).append("~");
 		sb.append(end).append("~");
 		sb.append(message);
-		try {
-			return (new String(sb.toString().getBytes("UTF-8"), 0, 512, "UTF-8")).toString();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			return "";
-		}
+		return sb.toString();
 	}
 }

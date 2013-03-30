@@ -7,6 +7,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 
 import sessions.CS5300PROJ1Session;
 import sessions.CS5300PROJ2Cookie;
@@ -66,7 +67,8 @@ public class CS5300PROJ2RPCClient {
 			throws NumberFormatException, IOException {
 		CS5300PROJ2RPCMessage recvM = null;
 
-		byte[] bytes = m.toString().getBytes("UTF-8");
+		byte[] bytes = m.toBytes();
+		
 		DatagramPacket sendPacket = 
 				new DatagramPacket(bytes, 512, InetAddress.getByName(ippDest.getIP()), Integer.parseInt(ippDest.getPort()));
 		rpcSocket.send(sendPacket);

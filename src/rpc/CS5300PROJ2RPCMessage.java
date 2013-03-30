@@ -1,5 +1,8 @@
 package rpc;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+
 import sessions.CS5300PROJ1Session;
 import sessions.CS5300PROJ2SessionId;
 
@@ -138,6 +141,13 @@ public class CS5300PROJ2RPCMessage {
 			}
 		}
 		return sb.toString();
+	}
+	
+	public byte[] toBytes() throws UnsupportedEncodingException {
+		byte[] msgBytes = this.toString().getBytes("UTF-8");
+		ByteBuffer bb = ByteBuffer.allocate(512);
+		bb.put(msgBytes);
+		return bb.array();
 	}
 	
 
