@@ -110,11 +110,11 @@ public class CS5300PROJ2RPCMessage {
 			}
 		} else {
 			type = TYPE.SEND;
-			sessionID = new CS5300PROJ2SessionId(args[4]);
-			version = Integer.parseInt(args[5]);
+			sessionID = new CS5300PROJ2SessionId(args[4] + "~" + args[5]);
+			version = Integer.parseInt(args[6]);
 			if (opt == OPT.WRITE) {
-				discardTime = Long.parseLong(args[6]);
-				session = new CS5300PROJ1Session(args[7]);
+				discardTime = Long.parseLong(args[7]);
+				session = new CS5300PROJ1Session(args[8]);
 			}
 		}
 	}
@@ -133,7 +133,7 @@ public class CS5300PROJ2RPCMessage {
 				sb.append("~").append(session.toString()); //5
 			} 
 		} else {
-			sb.append(sessionID.toString()).append(":"); //4
+			sb.append(sessionID.toString()).append("~"); //4
 			sb.append(version); //5
 			if (opt == OPT.WRITE) {
 				sb.append("~").append(discardTime); //6
