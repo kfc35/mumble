@@ -4,12 +4,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.net.Inet4Address;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
