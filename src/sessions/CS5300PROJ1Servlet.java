@@ -217,7 +217,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 							sessionDataTable.put(session.getSessionID().toString(), session);
 							return session;
 						}
-						memberSet.remove(ipp);
+						memberSet.remove(ipp.toString());
 					}
 				}
 			}
@@ -310,7 +310,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 						sessionDataTable.put(session.getSessionID().toString(), session);
 						return session;
 					}
-					memberSet.remove(ipp);
+					memberSet.remove(ipp.toString());
 				}
 			}
 		}
