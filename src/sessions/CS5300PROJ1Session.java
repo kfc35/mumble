@@ -37,7 +37,7 @@ public class CS5300PROJ1Session {
 	
 	public CS5300PROJ1Session(String s) {
 		System.out.println("Trying to create a session with the string: " + s);
-		String[] args = s.split("~", 7);
+		String[] args = s.split("~", 5);
 		/*
 		 * Splits into 
 		 * uID                                 |
@@ -46,9 +46,9 @@ public class CS5300PROJ1Session {
 		 * end
 		 * message
 		 */
-		cookie = new CS5300PROJ2Cookie(s.substring(0, s.indexOf(args[6]) - 1));
-		end = Long.parseLong(args[5]);
-		message = args[6];
+		cookie = new CS5300PROJ2Cookie(args[0] + "~" + args[1] + "~" + args[2]);
+		end = Long.parseLong(args[3]);
+		message = args[4];
 	}
 	
 

@@ -187,15 +187,15 @@ public class CS5300PROJ2RPCMessage {
 				}
 			} 
 		} else {
-			sb.append("~").append(sessionID.toString()); //4
 			if (opt == OPT.W) {
-				// 5
+				// 4
 				if (session == null) {
 					sb.append("~").append("null");
 				} else {
 					sb.append("~").append(session);
 				}
 			} else {
+				sb.append("~").append(sessionID.toString()); //4
 				sb.append("~").append(version); //5
 			}
 		}
