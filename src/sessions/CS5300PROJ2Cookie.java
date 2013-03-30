@@ -82,7 +82,7 @@ public class CS5300PROJ2Cookie extends Cookie{
 	}
 	
 	public boolean hasBackupIPP() {
-		return this.getBackupIPP() == null;
+		return location.hasBackupIPP();
 	}
 
 	/**

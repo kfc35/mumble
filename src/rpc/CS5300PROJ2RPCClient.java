@@ -24,7 +24,7 @@ public class CS5300PROJ2RPCClient {
 	private String port;
 
 	public CS5300PROJ2RPCClient(int callID, CS5300PROJ2IPP ipp, CS5300PROJ2SessionId sessionID, int i, String p) 
-					throws SocketException, NumberFormatException, UnknownHostException {
+			throws SocketException, NumberFormatException, UnknownHostException {
 		rpcSocket = new DatagramSocket();
 		rpcSocket.setSoTimeout(CS5300PROJ2RPCMessage.RPC_TIMEOUT);
 		ippDest = ipp;
@@ -35,7 +35,7 @@ public class CS5300PROJ2RPCClient {
 	}
 
 	public CS5300PROJ2RPCClient(int callID, CS5300PROJ2Cookie cookie, boolean primary, String p) throws 
-			NumberFormatException, SocketException, UnknownHostException {
+	NumberFormatException, SocketException, UnknownHostException {
 		this(callID, primary ? cookie.getPrimaryIPP() : cookie.getBackupIPP(), 
 				cookie.getSessionID(), cookie.getVersion(), p);
 	}
@@ -68,29 +68,24 @@ public class CS5300PROJ2RPCClient {
 		CS5300PROJ2RPCMessage recvM = null;
 
 		byte[] bytes = m.toBytes();
-		
+
 		DatagramPacket sendPacket = 
 				new DatagramPacket(bytes, 512, InetAddress.getByName(ippDest.getIP()), Integer.parseInt(ippDest.getPort()));
 		rpcSocket.send(sendPacket);
 		byte[] inBuf = new byte[512];
 		DatagramPacket recvPacket = new DatagramPacket(inBuf, 512);
 
-		for (int i = 0 ; i < 2 ; i++) {
-			try {
-				do {
-					recvPacket.setLength(inBuf.length);
-					rpcSocket.receive(recvPacket);
-					recvM = new CS5300PROJ2RPCMessage(new String(inBuf, 0, 512, "UTF-8"));
-				} while (recvM != null && recvM.getCallID() != m.getCallID());
-			} catch (InterruptedIOException iioe) {
-				if (i == 0 && twice) {
-					continue;
-				}
-				recvM = null; // Set it back to a null
-			} catch (IOException ioe) {
-				//TODO what to do here?
-			}
-			break;
+		try {
+			do {
+				recvPacket.setLength(inBuf.length);
+				rpcSocket.receive(recvPacket);
+				recvM = new CS5300PROJ2RPCMessage(new String(inBuf, 0, 512, "UTF-8"));
+			} while (recvM != null && recvM.getCallID() != m.getCallID());
+		} catch (InterruptedIOException iioe) {
+			recvM = null; // Set it back to a null
+		} catch (IOException ioe) {
+			//TODO what to do here?
+			recvM = null;
 		}
 		rpcSocket.close();
 		return recvM;

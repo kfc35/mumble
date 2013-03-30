@@ -133,14 +133,14 @@ public class CS5300PROJ2RPCMessage {
 				sb.append("~").append(session.toString()); //5
 			} 
 		} else {
-			sb.append(sessionID.toString()).append(":"); //4
+			sb.append(sessionID.toString()).append("~"); //4
 			sb.append(version); //5
 			if (opt == OPT.WRITE) {
 				sb.append("~").append(discardTime); //6
 				sb.append("~").append(session.toString()); //7
 			}
 		}
-		return sb.toString();
+		return sb.append("~").toString();
 	}
 	
 	public byte[] toBytes() throws UnsupportedEncodingException {
