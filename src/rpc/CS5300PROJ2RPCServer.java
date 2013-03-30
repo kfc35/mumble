@@ -139,7 +139,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 			if (returnMsg != null) {
 				byte[] bytes = null;
 				try {
-					bytes = returnMsg.toString().getBytes("UTF-8");
+					bytes = returnMsg.toBytes();
 				} catch (UnsupportedEncodingException e) {
 					// this should NEVER happen.
 					e.printStackTrace();
