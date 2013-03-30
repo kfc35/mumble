@@ -14,7 +14,8 @@ public class CS5300PROJ2SessionId {
 	public CS5300PROJ2SessionId(String s) {
 		String args[] = s.split("~");
 		sessionNum = Integer.parseInt(args[0]);
-		originIPP = new CS5300PROJ2IPP(args[1], args[2]);
+		args = args[1].split("_");
+		originIPP = new CS5300PROJ2IPP(args[0], args[1]);
 	}
 	
 

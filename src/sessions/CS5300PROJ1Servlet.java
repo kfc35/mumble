@@ -193,8 +193,8 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 		if (cookies != null) {
 			for (Cookie c : cookies) {
-				if (c.getName().equals(CS5300PROJ2Cookie.COOKIE_NAME) && c instanceof CS5300PROJ2Cookie) {
-					CS5300PROJ2Cookie cookieCrisp = (CS5300PROJ2Cookie) c;
+				if (c.getName().equals(CS5300PROJ2Cookie.COOKIE_NAME)) {
+					CS5300PROJ2Cookie cookieCrisp = new CS5300PROJ2Cookie(c.getValue());
 
 					// if IPP local is either Primary or backup
 					if (cookieCrisp.equalsEitherLocation(myIPP)) {
@@ -298,14 +298,14 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 		CS5300PROJ2Cookie cookieToSend;
 
 		// End is when the session state could not be gotten from primary and/or backup
-		if (session.getEnd() == -1 || type == REQUEST.LOGOUT) {
+		if (type == REQUEST.LOGOUT || session.getEnd() == -1) {
 
 			// Creates a cookie to send to the client to erase all past cookies
 			cookieToSend = new CS5300PROJ2Cookie();
 			cookieToSend.setMaxAge(0);
 			response.addCookie(cookieToSend);
 			PrintWriter out = response.getWriter();
-			if (session.getEnd() == -1) {
+			if (session != null && session.getEnd() == -1) {
 				out.println("Sorry but we cannot find the session that you were referring to.");
 			} else {
 				out.println("Bye");

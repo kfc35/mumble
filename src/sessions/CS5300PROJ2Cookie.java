@@ -14,6 +14,7 @@ public class CS5300PROJ2Cookie extends Cookie{
 		sessionID = sID;
 		version = j;
 		location = i;
+		this.setValue(toString());
 	}
 	
 	public CS5300PROJ2Cookie(String s) {
