@@ -2,6 +2,7 @@ package sessions;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,9 +54,10 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 
 	/**
+	 * @throws UnknownHostException 
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public CS5300PROJ1Servlet() {
+	public CS5300PROJ1Servlet() throws UnknownHostException {
 		super();
 		callID = Integer.parseInt(rpcServerObj.getLocalPort()) * 10000;
 		terminator.start();
