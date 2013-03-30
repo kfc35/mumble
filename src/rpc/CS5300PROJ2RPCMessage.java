@@ -123,7 +123,7 @@ public class CS5300PROJ2RPCMessage {
 	 */
 	public CS5300PROJ2RPCMessage(String m) {
 		System.out.println("Making a message out of: " + m);
-		String[] args = m.split("~", 7);
+		String[] args = m.split("~", 8);
 		if (args.length < 5) 
 			return; // error case
 
@@ -136,7 +136,7 @@ public class CS5300PROJ2RPCMessage {
 				if (args[4].toLowerCase().equals("null")) {
 					session = null;
 				} else {
-					session = new CS5300PROJ1Session(args[4] + "~" + args[5] + "~" + args[6]);
+					session = new CS5300PROJ1Session(args[4] + "~" + args[5] + "~" + args[6] + "~" + args[7]);
 				}
 			} else {
 				version = Integer.parseInt(args[4]);
@@ -148,7 +148,7 @@ public class CS5300PROJ2RPCMessage {
 					session = null;
 				} else {
 					System.out.println("Session is: " + args[4]);
-					session = new CS5300PROJ1Session(args[4] + "~" + args[5] + "~" + args[6]);
+					session = new CS5300PROJ1Session(args[4] + "~" + args[5] + "~" + args[6] + "~" + args[7]);
 				}
 			} else {
 				sessionID = new CS5300PROJ2SessionId(args[4] + "~" + args[5]);
