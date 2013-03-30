@@ -159,11 +159,11 @@ public class CS5300PROJ2RPCMessage {
 	/*
 	 * D will have the form:
 	 * for send: S~D~callID~port~SID~version
-	 * for receive: R~callID~port~D~version
+	 * for receive: R~D~callID~port~version
 	 * 
 	 * R will have the form:
 	 * for send: S~R~callID~port~SID~version
-	 * for receive: R~D~callID~port~session
+	 * for receive: R~R~callID~port~session
 	 * 
 	 * W will have the form:
 	 * for send: S~W~callID~port~session
@@ -179,13 +179,14 @@ public class CS5300PROJ2RPCMessage {
 
 		if (type == TYPE.R) {
 			if (opt == OPT.R) {
-				//TODO session null case!!
 				if (session == null) {
 					sb.append("~").append("null");
 				} else {
 					sb.append("~").append(session); //4
 				}
-			} 
+			} else {
+				sb.append(version);
+			}
 		} else {
 			if (opt == OPT.W) {
 				// 4
