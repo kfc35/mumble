@@ -121,6 +121,7 @@ public class CS5300PROJ2RPCMessage {
 				if (args[8].toLowerCase().equals("null")) {
 					session = null;
 				} else {
+					System.out.println("Session is: " + args[8]);
 				session = new CS5300PROJ1Session(args[8]);
 				}
 			}

@@ -42,8 +42,14 @@ public class CS5300PROJ2RPCServer implements Runnable{
 		else return "";
 	}
 	
-	public String getLocalAddress() throws UnknownHostException {
-		InetAddress ip = InetAddress.getLocalHost();
+	public String getLocalAddress() {
+		InetAddress ip;
+		try {
+			ip = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			return null;
+		}
 		return ip.getHostAddress();
 	}
 	
@@ -101,10 +107,12 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					}
 					CS5300PROJ2Location location = msg.getSession().getCookie().getLocation();
 					synchronized(memberSet) {
-						if (!memberSet.containsKey(location.getPrimaryIPP())) {
+						if (!memberSet.containsKey(location.getPrimaryIPP()) && 
+								!location.getPrimaryIPP().equals(new CS5300PROJ2IPP(this.getLocalAddress(), this.getLocalPort()))) {
 							memberSet.put(location.getPrimaryIPP().toString(), -1);
 						}
-						if (location.getBackupIPP() != null && !memberSet.containsKey(location.getBackupIPP())) {
+						if (location.getBackupIPP() != null && !memberSet.containsKey(location.getBackupIPP()) &&
+								!location.getPrimaryIPP().equals(new CS5300PROJ2IPP(this.getLocalAddress(), this.getLocalPort()))) {
 							memberSet.put(location.getBackupIPP().toString(), -1);
 						}
 					}
