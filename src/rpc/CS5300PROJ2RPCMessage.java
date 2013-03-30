@@ -136,7 +136,7 @@ public class CS5300PROJ2RPCMessage {
 				if (args[4].toLowerCase().equals("null")) {
 					session = null;
 				} else {
-					session = new CS5300PROJ1Session(m.substring(m.indexOf(args[4])));
+					session = new CS5300PROJ1Session(m.substring(m.indexOf(args[4] + "~" + args[5])));
 				}
 			} else {
 				version = Integer.parseInt(args[4]);
@@ -147,7 +147,7 @@ public class CS5300PROJ2RPCMessage {
 				if (args[4].toLowerCase().equals("null")) {
 					session = null;
 				} else {
-					session = new CS5300PROJ1Session(m.substring(m.indexOf(args[4])));
+					session = new CS5300PROJ1Session(m.substring(m.indexOf(args[4] + "~" + args[5])));
 				}
 			} else {
 				sessionID = new CS5300PROJ2SessionId(args[4] + "~" + args[5]);
@@ -175,7 +175,7 @@ public class CS5300PROJ2RPCMessage {
 		sb.append(type).append("~"); //0
 		sb.append(opt).append("~");
 		sb.append(callID).append("~"); //2
-		sb.append(port).append("~"); //3
+		sb.append(port); //3
 
 		if (type == TYPE.R) {
 			if (opt == OPT.R) {
@@ -187,7 +187,7 @@ public class CS5300PROJ2RPCMessage {
 				}
 			} 
 		} else {
-			sb.append(sessionID.toString()).append("~"); //4
+			sb.append("~").append(sessionID.toString()); //4
 			if (opt == OPT.W) {
 				// 5
 				if (session == null) {
@@ -196,7 +196,7 @@ public class CS5300PROJ2RPCMessage {
 					sb.append("~").append(session);
 				}
 			} else {
-				sb.append(version); //5
+				sb.append("~").append(version); //5
 			}
 		}
 		System.out.println("Message to string:" + sb.toString());
