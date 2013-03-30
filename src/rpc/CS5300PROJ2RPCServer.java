@@ -80,6 +80,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 			System.out.println(msgString);
 			CS5300PROJ2RPCMessage msg = new CS5300PROJ2RPCMessage(msgString);
 			CS5300PROJ2IPP recvIPP = new CS5300PROJ2IPP(returnAddr.getHostAddress(), msg.getPort());
+			System.out.println(recvIPP);
 			CS5300PROJ2RPCMessage returnMsg = null;
 			switch (msg.getOpt()) {
 				case READ:
