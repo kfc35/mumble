@@ -7,6 +7,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.RequestDispatcher;
@@ -184,8 +186,8 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 					session.setBackupIPP(null);
 				} else {
 					// Find a backup
-					for (Object o : memberSet.keySet().toArray()) {
-						CS5300PROJ2IPP ipp = (CS5300PROJ2IPP) o;
+					for (Entry<String, Integer> entry: memberSet.entrySet()) {
+						CS5300PROJ2IPP ipp = new CS5300PROJ2IPP(entry.getKey());
 						session.setBackupIPP(ipp);
 						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
 						session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
@@ -346,15 +348,12 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 			getServletContext().setAttribute("discardTime", dateFormat.format(new Date(session.getEnd())));
 
-			Object[] members = null;
+			String members = "";
 			synchronized(memberSet) {
-				members = memberSet.keySet().toArray();
+				
+				members = memberSet.keySet().toString();
 			}
-			String[] membersString = new String[members.length];
-			for (int i = 0; i < members.length; i++) {
-				membersString[i] = members[i].toString();
-			}
-			getServletContext().setAttribute("members", membersString);
+			getServletContext().setAttribute("members", members);
 			
 			RequestDispatcher rd = request.getRequestDispatcher("/CS5300PROJ1index.jsp");
 			rd.forward(request, response);

@@ -38,7 +38,7 @@ public class CS5300PROJ2Location {
 	}
 	
 	public boolean hasBackupIPP() {
-		return backupIPP == null;
+		return backupIPP != null;
 	}
 
 	public void setBackupIPP(CS5300PROJ2IPP backupIPP) {

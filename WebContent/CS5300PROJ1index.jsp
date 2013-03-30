@@ -1,8 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="UTF-8"%>
-<%
-	String[] array = (String[]) getServletContext().getAttribute("members");
-%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -24,20 +21,6 @@
 <p>IPP Primary~Secondary of this session data: <%=getServletContext().getAttribute("locations")%></p>
 <p>Expires <%=getServletContext().getAttribute("expires")%></p>
 <p>Discard Time: <%=getServletContext().getAttribute("discardTime")%></p>
-<p>Member Set IPPs:
-<%
-	int i = 0;
-	for(i = 0; i < array.length - 1; i++) 
-	{
-		out.print(array[i] +", ");
-	}
-	if (array.length != 0) {
-		out.print(array[array.length - 1]);
-	}
-	else {
-		out.print("None");
-	}
-%> 
-	</p>
+<p>Member Set IPPs: <%=getServletContext().getAttribute("members")%></p>
 </body>
 </html>
