@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public class CS5300PROJ1Terminator implements Runnable {
-	private ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session> sessionDataTable;
+	private ConcurrentHashMap<String, CS5300PROJ1Session> sessionDataTable;
 
-	public CS5300PROJ1Terminator(ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session> sessionDataTable) {
+	public CS5300PROJ1Terminator(ConcurrentHashMap<String, CS5300PROJ1Session> sessionDataTable) {
 		this.sessionDataTable = sessionDataTable;
 	}
 
@@ -19,13 +19,13 @@ public class CS5300PROJ1Terminator implements Runnable {
 	public synchronized void run() {
 		while(true) {
 			try{
-				this.wait(1000 * 120); // Runs every 2 minutes 
+				this.wait(1000 * 60*30); // Runs every 30 minutes TODO
 				System.out.println("Terminator check");
 
 				// Synchronizes the sessionDataTable so that the access and removes don't conflict
 				synchronized (sessionDataTable) {
 					// For every entry in the hashtable, remove all expired sessions 
-					for (Entry<CS5300PROJ2SessionId, CS5300PROJ1Session> e: sessionDataTable.entrySet()) {
+					for (Entry<String, CS5300PROJ1Session> e: sessionDataTable.entrySet()) {
 						CS5300PROJ1Session session = e.getValue();
 						
 						if (session.getEnd() < System.currentTimeMillis()) {

@@ -42,7 +42,4 @@ public class CS5300PROJ2SessionId {
 		sb.append(originIPP.toString());
 		return sb.toString();
 	}
-	
-	
-
 }

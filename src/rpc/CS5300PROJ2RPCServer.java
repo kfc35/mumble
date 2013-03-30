@@ -16,13 +16,13 @@ import sessions.CS5300PROJ2Location;
 import sessions.CS5300PROJ2SessionId;
 
 public class CS5300PROJ2RPCServer implements Runnable{
-	private ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session> sessionDataTable;
-	private ConcurrentHashMap<CS5300PROJ2IPP, Integer> memberSet;
+	private ConcurrentHashMap<String, CS5300PROJ1Session> sessionDataTable;
+	private ConcurrentHashMap<String, Integer> memberSet;
 	private DatagramSocket rpcSocket;
 
 	//TODO degrade gracefully if a socket cannot be opened?
-	public CS5300PROJ2RPCServer(ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session> sessionDataTable,
-			ConcurrentHashMap<CS5300PROJ2IPP, Integer> memberSet){
+	public CS5300PROJ2RPCServer(ConcurrentHashMap<String, CS5300PROJ1Session> sessionDataTable,
+			ConcurrentHashMap<String, Integer> memberSet){
 		this.sessionDataTable = sessionDataTable;
 		this.memberSet = memberSet;
 		try {
@@ -96,15 +96,15 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					
 				case WRITE:
 					synchronized(sessionDataTable) {
-						sessionDataTable.put(msg.getSessionID(), msg.getSession());
+						sessionDataTable.put(msg.getSessionID().toString(), msg.getSession());
 					}
 					CS5300PROJ2Location location = msg.getSession().getCookie().getLocation();
 					synchronized(memberSet) {
 						if (!memberSet.containsKey(location.getPrimaryIPP())) {
-							memberSet.put(location.getPrimaryIPP(), -1);
+							memberSet.put(location.getPrimaryIPP().toString(), -1);
 						}
 						if (location.getBackupIPP() != null && !memberSet.containsKey(location.getBackupIPP())) {
-							memberSet.put(location.getBackupIPP(), -1);
+							memberSet.put(location.getBackupIPP().toString(), -1);
 						}
 					}
 					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.WRITE, msg.getCallID(), 1, getLocalPort());
@@ -124,7 +124,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 			 * Our locks are ordered such that sessionDataTable is locked first */
 			synchronized(memberSet) { //add this guy to the memberSet if not added before
 				if (!memberSet.containsKey(recvIPP)) {
-					memberSet.put(recvIPP, msg.getCallID());
+					memberSet.put(recvIPP.toString(), msg.getCallID());
 				}
 				else if (memberSet.get(recvIPP) > msg.getCallID()) {
 					//the most recent callID processed from this member
@@ -132,7 +132,7 @@ public class CS5300PROJ2RPCServer implements Runnable{
 					continue;
 				}
 				else {
-					memberSet.put(recvIPP, msg.getCallID());
+					memberSet.put(recvIPP.toString(), msg.getCallID());
 				}
 			}
 			if (returnMsg != null) {

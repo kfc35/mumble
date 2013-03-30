@@ -31,10 +31,10 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	public static boolean CRASH = false;
 	private static final long serialVersionUID = 1L;
 	public static final String DEFAULT_MESSAGE = "Hello, User!";
-	private ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session> sessionDataTable = 
-			new ConcurrentHashMap<CS5300PROJ2SessionId, CS5300PROJ1Session>();
-	private ConcurrentHashMap<CS5300PROJ2IPP, Integer> memberSet = 
-			new ConcurrentHashMap<CS5300PROJ2IPP, Integer>();
+	private ConcurrentHashMap<String, CS5300PROJ1Session> sessionDataTable = 
+			new ConcurrentHashMap<String, CS5300PROJ1Session>();
+	private ConcurrentHashMap<String, Integer> memberSet = 
+			new ConcurrentHashMap<String, Integer>();
 	//The value is the latest callID received by this member
 
 	/**Time Variables for timeouts**/
@@ -174,7 +174,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
 						session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
 						if (client.write(session, session.getEnd())) {
-							sessionDataTable.put(session.getSessionID(), session);
+							sessionDataTable.put(session.getSessionID().toString(), session);
 							return session;
 						}
 						memberSet.remove(ipp);
@@ -200,7 +200,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 					// if IPP local is either Primary or backup
 					if (cookieCrisp.equalsEitherLocation(myIPP)) {
-						session = sessionDataTable.get(cookieCrisp.getSessionID());
+						session = sessionDataTable.get(cookieCrisp.getSessionID().toString());
 						if (session == null) { 
 							/*this can happen if you stop the servlet, clearing the
 						  concurrent hashmap, and then run it again -> Eclipse still has
@@ -223,12 +223,12 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 						// If found
 						if (session != null) {
 							synchronized (memberSet) {
-								memberSet.put(client.getIppDest(), client.getCallID());
+								memberSet.put(client.getIppDest().toString(), client.getCallID());
 
 								// Didn't receive confirmation from the second but 
 								// assumes that second is fine 
 								if (found_in_first) {
-									memberSet.put(cookieCrisp.getBackupIPP(), -1);
+									memberSet.put(cookieCrisp.getBackupIPP().toString(), -1);
 								}
 							}
 						} else {
@@ -267,7 +267,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 					CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
 					session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
 					if (client.write(session, session.getEnd())) {
-						sessionDataTable.put(session.getSessionID(), session);
+						sessionDataTable.put(session.getSessionID().toString(), session);
 						return session;
 					}
 					memberSet.remove(ipp);
@@ -278,7 +278,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 		if (DEBUG) {
 			System.out.println("Created a New Session: " + session.toString());
 		}
-		sessionDataTable.put(sid, session); 
+		sessionDataTable.put(session.getSessionID().toString(), session); 
 		return session;
 	}
 
