@@ -136,7 +136,7 @@ public class CS5300PROJ2RPCMessage {
 				if (args[4].toLowerCase().equals("null")) {
 					session = null;
 				} else {
-					session = new CS5300PROJ1Session(args[4] + "~" + args[5] + "~" + args[6]);
+					session = new CS5300PROJ1Session(m.substring(m.indexOf(args[4])));
 				}
 			} else {
 				version = Integer.parseInt(args[4]);
@@ -147,8 +147,7 @@ public class CS5300PROJ2RPCMessage {
 				if (args[4].toLowerCase().equals("null")) {
 					session = null;
 				} else {
-					System.out.println("Session is: " + args[4]);
-					session = new CS5300PROJ1Session(args[4] + "~" + args[5] + "~" + args[6]);
+					session = new CS5300PROJ1Session(m.substring(m.indexOf(args[4])));
 				}
 			} else {
 				sessionID = new CS5300PROJ2SessionId(args[4] + "~" + args[5]);
