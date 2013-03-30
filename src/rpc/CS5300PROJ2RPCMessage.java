@@ -207,7 +207,7 @@ public class CS5300PROJ2RPCMessage {
 		System.out.println("bytes from string: " + toString());
 		byte[] msgBytes = this.toString().getBytes("UTF-8");
 		ByteBuffer bb = ByteBuffer.allocate(512);
-		bb.put(msgBytes);
+		bb.put(msgBytes, 0, (msgBytes.length <= 512 ? msgBytes.length : 512));
 		return bb.array();
 	}
 
