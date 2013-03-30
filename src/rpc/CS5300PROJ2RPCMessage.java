@@ -163,7 +163,7 @@ public class CS5300PROJ2RPCMessage {
 	 * 
 	 * R will have the form:
 	 * for send: S~R~callID~port~SID~version
-	 * for receive: R~D~callID~port~version~message
+	 * for receive: R~D~callID~port~session
 	 * 
 	 * W will have the form:
 	 * for send: S~W~callID~port~session
@@ -178,13 +178,12 @@ public class CS5300PROJ2RPCMessage {
 		sb.append(port).append("~"); //3
 
 		if (type == TYPE.R) {
-			sb.append(version); //4
 			if (opt == OPT.R) {
 				//TODO session null case!!
 				if (session == null) {
 					sb.append("~").append("null");
 				} else {
-					sb.append("~").append(session); //5
+					sb.append("~").append(session); //4
 				}
 			} 
 		} else {
