@@ -62,7 +62,7 @@ public class CS5300PROJ2RPCClient {
 	public boolean delete() 
 			throws NumberFormatException, IOException {
 		CS5300PROJ2RPCMessage recv = sendAndReceive(
-				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.DELETE, callID, sessionID, version, port), false);
+				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.D, callID, sessionID, version, port), false);
 		
 		if (recv == null) {
 			return false;
