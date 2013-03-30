@@ -54,6 +54,9 @@ public class CS5300PROJ2RPCClient {
 			throws NumberFormatException, IOException {
 		CS5300PROJ2RPCMessage recv = sendAndReceive(
 				new CS5300PROJ2RPCMessage(callID, sessionID, version, session, discardTime, port), false);
+		if (recv == null) {
+			return false;
+		}
 		return (recv.getVersion() == 1);
 	}
 
