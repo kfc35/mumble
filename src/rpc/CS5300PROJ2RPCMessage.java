@@ -95,7 +95,7 @@ public class CS5300PROJ2RPCMessage {
 	 * @param m
 	 */
 	public CS5300PROJ2RPCMessage(String m) {
-		String[] args = m.split("~");
+		String[] args = m.split("~", 9);
 		if (args.length < 5) 
 			return; // error case
 		

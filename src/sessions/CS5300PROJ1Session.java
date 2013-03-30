@@ -1,6 +1,5 @@
 package sessions;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 public class CS5300PROJ1Session {
