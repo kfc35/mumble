@@ -151,10 +151,10 @@ public class CS5300PROJ2RPCServer implements Runnable{
 			/*This synchronized block is down here to avoid deadlock
 			 * Our locks are ordered such that sessionDataTable is locked first */
 			synchronized(memberSet) { //add this guy to the memberSet if not added before
-				if (!memberSet.containsKey(recvIPP)) {
+				if (!memberSet.containsKey(recvIPP.toString())) {
 					memberSet.put(recvIPP.toString(), msg.getCallID());
 				}
-				else if (memberSet.get(recvIPP) > msg.getCallID()) {
+				else if (memberSet.get(recvIPP.toString()) > msg.getCallID()) {
 					//the most recent callID processed from this member
 					//is LATER than the callID of this message from the SAME member
 					continue;
