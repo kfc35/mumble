@@ -44,11 +44,11 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 	public static final long EXPIRY_TIME_FROM_CURRENT = SESSION_TIMEOUT_SECS + DELTA;
 	public static final long GAMMA = 100; //0.1 secs
 	public static final long DISCARD_TIME_FROM_CURRENT = SESSION_TIMEOUT_SECS + 2 * DELTA + GAMMA;
-	
+
 	private Thread terminator = new Thread(new CS5300PROJ1Terminator(sessionDataTable));
 	private CS5300PROJ2RPCServer rpcServerObj = new CS5300PROJ2RPCServer(sessionDataTable, memberSet);
 	private Thread rpcServer = new Thread(rpcServerObj);
-	
+
 	private int callID;
 	private CS5300PROJ2IPP myIPP;
 	private int numSessions = 0;
@@ -135,7 +135,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 				type = REQUEST.REPLACE;
 			}
 		}
-		
+
 		synchronized (sessionDataTable) {
 			session = execute(request.getCookies(), type, message);
 			if (null == session && type == REQUEST.REPLACE) {
@@ -173,10 +173,10 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 		// If logout, then just remove the session
 		if (type == REQUEST.LOGOUT) {
 			sessionDataTable.remove(session.getSessionID());
-			
+
 			//Remove from the primary and backup if applicable
 			CS5300PROJ2RPCClient client;
-			
+
 			if (!session.getCookie().getPrimaryIPP().equals(myIPP)) {
 				client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), true, rpcServerObj.getLocalPort());
 				if (!client.delete()) {
@@ -185,7 +185,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 					}
 				}
 			}
-			
+
 			if (session.getCookie().getBackupIPP() != null &&
 					!session.getCookie().getBackupIPP().equals(myIPP)) {
 				client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
@@ -261,7 +261,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 								}
 							}
 						} 
-						
+
 						// If the first one didn't return anything but there is a backupIPP
 						if (session == null && cookieCrisp.hasBackupIPP()) { // there's a backup to send to
 							client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, false, rpcServerObj.getLocalPort());
@@ -273,7 +273,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 								}
 							}
 						} 
-						
+
 						if (session == null) { //Create a new session
 							session = new CS5300PROJ1Session();
 							if (!firstResponded && !secondResponded) {
@@ -326,7 +326,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 				}
 			}
 		}
-		
+
 		if (DEBUG) {
 			System.out.println("Created a New Session: " + session.toString());
 		}
@@ -352,18 +352,14 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 		CS5300PROJ2Cookie cookieToSend;
 
 		// End is when the session state could not be gotten from primary and/or backup
-		if (type == REQUEST.LOGOUT || session.getEnd() == -1) {
+		if (type == REQUEST.LOGOUT) {
 
 			// Creates a cookie to send to the client to erase all past cookies
 			cookieToSend = new CS5300PROJ2Cookie();
 			cookieToSend.setMaxAge(0);
 			response.addCookie(cookieToSend);
 			PrintWriter out = response.getWriter();
-			if (session != null && session.getEnd() == -1) {
-				out.println("Sorry but we cannot find the session that you were referring to.");
-			} else {
-				out.println("Bye");
-			}
+			out.println("Bye");
 		} else {
 			cookieToSend = session.getCookie();
 			cookieToSend.setMaxAge((int) (EXPIRY_TIME_FROM_CURRENT / 1000));
@@ -384,11 +380,11 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 			String members = "";
 			synchronized(memberSet) {
-				
+
 				members = memberSet.keySet().toString();
 			}
 			getServletContext().setAttribute("members", members);
-			
+
 			RequestDispatcher rd = request.getRequestDispatcher("/CS5300PROJ1index.jsp");
 			rd.forward(request, response);
 		}
