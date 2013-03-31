@@ -40,7 +40,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 	/**Time Variables for timeouts**/
 	public static final long DELTA = 1000 * 3; //3 secs
-	public static final long SESSION_TIMEOUT_SECS = 1000 * 120; //120 secs = 2 mins
+	public static final long SESSION_TIMEOUT_SECS = 1000 * 60 * 30; //120 secs = 2 mins
 	public static final long EXPIRY_TIME_FROM_CURRENT = SESSION_TIMEOUT_SECS + DELTA;
 	public static final long GAMMA = 100; //0.1 secs
 	public static final long DISCARD_TIME_FROM_CURRENT = SESSION_TIMEOUT_SECS + 2 * DELTA + GAMMA;
@@ -251,6 +251,8 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 						// Send a READ request to the primary, then the backup for session object
 						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, true, rpcServerObj.getLocalPort());
 						session = client.read();
+						boolean firstResponded = client.getResponded();
+						boolean secondResponded = false;
 						if (client.getResponded()) { // If there's a response from the first
 							synchronized (memberSet) {
 								memberSet.put(client.getIppDest().toString(), client.getCallID());
@@ -260,10 +262,11 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 							}
 						} 
 						
+						// If the first one didn't return anything but there is a backupIPP
 						if (session == null && cookieCrisp.hasBackupIPP()) { // there's a backup to send to
 							client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, false, rpcServerObj.getLocalPort());
 							session = client.read();
-							
+							secondResponded = client.getResponded();
 							if (client.getResponded()) {
 								synchronized (memberSet) {
 									memberSet.put(client.getIppDest().toString(), client.getCallID());
@@ -273,6 +276,15 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 						
 						if (session == null) { //Create a new session
 							session = new CS5300PROJ1Session();
+							if (!firstResponded && !secondResponded) {
+								session.setMessage("No server knows of you, so hey new user!");
+							} else if (!firstResponded && !secondResponded) {
+								session.setMessage("Both server communications failed, so hey new user!");
+							} else if (firstResponded && !secondResponded) {
+								session.setMessage("Primary forget and second didn't respond, so hey new user!");
+							} else {
+								session.setMessage("Primary didn't respond and second failed, so hey new user!");
+							}
 						}
 					}
 					break;

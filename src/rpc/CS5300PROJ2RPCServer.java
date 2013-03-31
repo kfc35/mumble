@@ -114,7 +114,8 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				synchronized(sessionDataTable) {
 					sess = sessionDataTable.get(msg.getSessionID().toString());
 				}
-				if (sess == null) {
+				if (sess == null || sess.getVersion() < msg.getVersion()) { 
+					// Also don't return if the version is too old
 					returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), -123, null, getLocalPort());
 				}
 				else {
