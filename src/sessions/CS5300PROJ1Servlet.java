@@ -172,7 +172,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 		// Do as the operations asked 
 		// If logout, then just remove the session
 		if (type == REQUEST.LOGOUT) {
-			sessionDataTable.remove(session.getSessionID());
+			sessionDataTable.remove(session.getSessionID().toString());
 
 			//Remove from the primary and backup if applicable
 			CS5300PROJ2RPCClient client;
@@ -243,7 +243,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 					// if IPP local is either Primary or backup
 					if (cookieCrisp.equalsEitherLocation(myIPP)) {
 						session = sessionDataTable.get(cookieCrisp.getSessionID().toString());
-						if (session == null || session.getVersion() < cookieCrisp.getVersion()) {
+						if (session == null || session.getVersion() < cookieCrisp.getVersion() || session.getEnd() < System.currentTimeMillis()) {
 							// If I'm the primary and there's a backup, try getting the session from the backup
 							if (cookieCrisp.getPrimaryIPP().equals(myIPP) && cookieCrisp.hasBackupIPP()) {
 								CS5300PROJ2RPCClient client = 
