@@ -30,7 +30,7 @@
 
 \section{To run:}
   \begin{description}
-    \item[On localhost:] Simply deploy the .war file into the tomcat7 webapps directory. To allow access from outside sources:
+    \item[On localhost:] Sorry but we only included the Amazon targeted .war file. It should be the same (hopefully), but please ask us if you need the localhost one specifically. You can probably download the .git commit file that's timestamped. Afterwards, simply deploy the .war file into the tomcat7 webapps directory. To allow access from outside sources:
       \begin{itemize}
         \item Bypass the firewall for port 8080 TCP
         \item For the server UDP port that is opened (You can determine this by going to http://localhost:8080/mumble and you'll see a a line ``This server's IPP port: IPxxx\_portNumber'', the 5-digit portNumber is the one you want), also bypass the firewall for this portNumber for UDP communications. Note that this may need to change everytime the app is started.
@@ -116,13 +116,13 @@
             \item \textbf{SERVLET:}
               \begin{itemize}
                 \item The main instance and logic for this project, it is called in both GET and POST instances. GET is for first time access and refresh, which we determined were very similar. POST is for Log out and Replace. It is also for the crash function.
-              \end{itemize}
 		\item When there is a crash, doGet and doPost methods both immediately return. A flag is also turned so that the RPC Server knows to exit its loop of servicing RPC requests.
                 \item There is a concurrent hash map for the sessions. We chose this over a priority queue because we believed it better to be better for lookups. 
 		\item There is a concurrent hash map for the member set. We chose this because we need to keep track of whether an older messages is being sent to the RPC Server because of delays in the network.
                 \item The cookies passed to the client is a regular Java cookie with the name  CS5300PROJ2 and the value as the sessionId, version, and the location. In the case of Log out, a max age of 0 is sent.
                 \item The code is divided into many sub-functions that prevent repetitive code. The main difference that we've found is the different actions on what to do if a session is found. This is resolved with enums. 
 		\item At the end of every doGet and doPost, many attributes in the Servlet Context are set so that information can be sent to our main jsp page.
+              \end{itemize}
             \item \textbf{SESSION:}
               \begin{itemize}
                  \item   In addition to its inherent values as a cookie, it also has a string sessionId, a string message, location, and a long end (expiration time). 
@@ -161,7 +161,9 @@
     \item We agreed on an ordering of the objects to prevent deadlock: the session table must be locked first before the member set is ever locked.
   \end{itemize}
 
-Cheers, \\
+\section{Extra Credit}
+  None :)
+
 \includegraphics{3tlx0s.jpg} \\
 Kevin, Horace, and Sweet
 \end{document}
