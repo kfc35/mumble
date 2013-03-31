@@ -252,30 +252,35 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, true, rpcServerObj.getLocalPort());
 						session = client.read();
 						boolean firstResponded = client.getResponded();
-						boolean secondResponded = false;
-						if (client.getResponded()) { // If there's a response from the first
-							synchronized (memberSet) {
+						boolean secondResponded = false;							
+						synchronized (memberSet) {
+							if (client.getResponded()) { // If there's a response from the first
+
 								memberSet.put(client.getIppDest().toString(), client.getCallID());
 								if (cookieCrisp.hasBackupIPP()) {
 									memberSet.put(cookieCrisp.getBackupIPP().toString(), -1);
 								}
+							} else {
+								memberSet.remove(client.getIppDest().toString());
 							}
-						} 
+						}
 
 						// If the first one didn't return anything but there is a backupIPP
 						if (session == null && cookieCrisp.hasBackupIPP()) { // there's a backup to send to
 							client = new CS5300PROJ2RPCClient(callID++, cookieCrisp, false, rpcServerObj.getLocalPort());
 							session = client.read();
 							secondResponded = client.getResponded();
-							if (client.getResponded()) {
-								synchronized (memberSet) {
+							synchronized (memberSet) {
+								if (client.getResponded()) {
 									memberSet.put(client.getIppDest().toString(), client.getCallID());
+								} else {
+									memberSet.remove(client.getIppDest().toString());
 								}
 							}
 						} 
 
 						if (session == null) { //Create a new session
-							session = new CS5300PROJ1Session();
+							session = createSession();
 							if (!firstResponded && !secondResponded) {
 								session.setMessage("No server knows of you, so hey new user!");
 							} else if (!firstResponded && !secondResponded) {

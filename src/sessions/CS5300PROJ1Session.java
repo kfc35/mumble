@@ -28,13 +28,6 @@ public class CS5300PROJ1Session {
 		cookie = new CS5300PROJ2Cookie(sID, 0, ipps);
 	}
 	
-	/**
-	 * Expired or not found session
-	 */
-	public CS5300PROJ1Session() {
-		end = -1;
-	}
-	
 	public CS5300PROJ1Session(String s) {
 		System.out.println("Trying to create a session with the string: " + s);
 		String[] args = s.split("~", 6);
