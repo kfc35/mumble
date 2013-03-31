@@ -99,9 +99,9 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				// this should NEVER happen.
 				e1.printStackTrace();
 			}
-			if (CS5300PROJ1Servlet.DEBUG) {
+			//if (CS5300PROJ1Servlet.DEBUG) {
 				System.out.println(msgString);
-			}
+			//}
 			CS5300PROJ2RPCMessage msg = new CS5300PROJ2RPCMessage(msgString);
 			CS5300PROJ2IPP recvIPP = new CS5300PROJ2IPP(returnAddr.getHostAddress(), msg.getPort());
 			if (CS5300PROJ1Servlet.DEBUG) {
@@ -112,6 +112,20 @@ public class CS5300PROJ2RPCServer implements Runnable{
 			case R:
 				CS5300PROJ1Session sess = null;
 				synchronized(sessionDataTable) {
+					/*Our locks are ordered such that sessionDataTable is locked first */
+					synchronized(memberSet) { //add this guy to the memberSet if not added before
+						if (!memberSet.containsKey(recvIPP.toString())) {
+							memberSet.put(recvIPP.toString(), msg.getCallID());
+						}
+						else if (memberSet.get(recvIPP.toString()) > msg.getCallID()) {
+							//the most recent callID processed from this member
+							//is LATER than the callID of this message from the SAME member
+							continue;
+						}
+						else {
+							memberSet.put(recvIPP.toString(), msg.getCallID());
+						}
+					}
 					sess = sessionDataTable.get(msg.getSessionID().toString());
 				}
 				if (sess == null || sess.getVersion() < msg.getVersion()) { 
@@ -125,6 +139,20 @@ public class CS5300PROJ2RPCServer implements Runnable{
 
 			case W:
 				synchronized(sessionDataTable) {
+					/*Our locks are ordered such that sessionDataTable is locked first */
+					synchronized(memberSet) { //add this guy to the memberSet if not added before
+						if (!memberSet.containsKey(recvIPP.toString())) {
+							memberSet.put(recvIPP.toString(), msg.getCallID());
+						}
+						else if (memberSet.get(recvIPP.toString()) > msg.getCallID()) {
+							//the most recent callID processed from this member
+							//is LATER than the callID of this message from the SAME member
+							continue;
+						}
+						else {
+							memberSet.put(recvIPP.toString(), msg.getCallID());
+						}
+					}
 					sessionDataTable.put(msg.getSession().getSessionID().toString(), msg.getSession());
 				}
 				CS5300PROJ2Location location = msg.getSession().getCookie().getLocation();
@@ -143,6 +171,20 @@ public class CS5300PROJ2RPCServer implements Runnable{
 
 			case D:
 				synchronized(sessionDataTable) {
+					/*Our locks are ordered such that sessionDataTable is locked first */
+					synchronized(memberSet) { //add this guy to the memberSet if not added before
+						if (!memberSet.containsKey(recvIPP.toString())) {
+							memberSet.put(recvIPP.toString(), msg.getCallID());
+						}
+						else if (memberSet.get(recvIPP.toString()) > msg.getCallID()) {
+							//the most recent callID processed from this member
+							//is LATER than the callID of this message from the SAME member
+							continue;
+						}
+						else {
+							memberSet.put(recvIPP.toString(), msg.getCallID());
+						}
+					}
 					sessionDataTable.remove(msg.getSessionID().toString());
 				}
 				returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.D, msg.getCallID(), 1, getLocalPort());
@@ -150,21 +192,6 @@ public class CS5300PROJ2RPCServer implements Runnable{
 
 			default:
 				break;
-			}
-			/*This synchronized block is down here to avoid deadlock
-			 * Our locks are ordered such that sessionDataTable is locked first */
-			synchronized(memberSet) { //add this guy to the memberSet if not added before
-				if (!memberSet.containsKey(recvIPP.toString())) {
-					memberSet.put(recvIPP.toString(), msg.getCallID());
-				}
-				else if (memberSet.get(recvIPP.toString()) > msg.getCallID()) {
-					//the most recent callID processed from this member
-					//is LATER than the callID of this message from the SAME member
-					continue;
-				}
-				else {
-					memberSet.put(recvIPP.toString(), msg.getCallID());
-				}
 			}
 			if (returnMsg != null) {
 				byte[] bytes = null;
