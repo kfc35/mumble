@@ -17,7 +17,8 @@
 <form method="post" action=""><input type="submit" name="Crash" value="Crash"/></form>
 <p>This server is located at: <%=getServletContext().getAttribute("address")%></p>
 <p>This server's IPP port: <%=getServletContext().getAttribute("myIPP")%></p>
-<p>Session Data found from: <%=getServletContext().getAttribute("sessionOrigin")%></p>
+<p>Session ID: [<%= getServletContext().getAttribute("sessionNumber") %>, <%=getServletContext().getAttribute("sessionOrigin")%>]</p>
+<p>Session Version: <%= getServletContext().getAttribute("sessionVersion") %></p>
 <p>IPP Primary~Secondary of this session data: <%=getServletContext().getAttribute("locations")%></p>
 <p>Expires <%=getServletContext().getAttribute("expires")%></p>
 <p>Discard Time: <%=getServletContext().getAttribute("discardTime")%></p>
