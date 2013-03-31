@@ -40,7 +40,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 
 	/**Time Variables for timeouts**/
 	public static final long DELTA = 1000 * 3; //3 secs
-	public static final long SESSION_TIMEOUT_SECS = 1000 * 60 * 30; //120 secs = 2 mins
+	public static final long SESSION_TIMEOUT_SECS = 1000 * 60 * 2; //120 secs = 2 mins
 	public static final long EXPIRY_TIME_FROM_CURRENT = SESSION_TIMEOUT_SECS + DELTA;
 	public static final long GAMMA = 100; //0.1 secs
 	public static final long DISCARD_TIME_FROM_CURRENT = SESSION_TIMEOUT_SECS + 2 * DELTA + GAMMA;
