@@ -51,7 +51,7 @@
 
 \section{Code}
   \begin{description}
-    \item[The java code] - is also separated into RPC code vs Session Code):
+    \item[The java code] - is also separated into RPC code vs Session Code:
       \begin{itemize}
         \item \textbf{RPC:}
           \begin{itemize}
@@ -61,6 +61,7 @@
                   \begin{itemize}
                     \item for send: S\textasciitilde{}D\textasciitilde{}callID\textasciitilde{}port\textasciitilde{}SID\textasciitilde{}version  
                     \item for receive: R\textasciitilde{}callID\textasciitilde{}port\textasciitilde{}SID\textasciitilde{}version 
+		    \item version number is a boolean bit of 1 = success, -1 = failure.
                   \end{itemize}
                 \item READ messages will have the form: 
                   \begin{itemize}
@@ -71,6 +72,7 @@
                   \begin{itemize}
                     \item for send: S\textasciitilde{}W\textasciitilde{}callID\textasciitilde{}port\textasciitilde{}session
                     \item for receive: R\textasciitilde{}W\textasciitilde{}callID\textasciitilde{}port\textasciitilde{}version
+		    \item version number is a boolean bit of 1 = success, -1 = failure.
                   \end{itemize}
                 \item The notations above are:
                   \begin{itemize}
