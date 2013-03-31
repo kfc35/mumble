@@ -114,16 +114,17 @@
       \end{itemize}
     \item[The HTML] - renders the front-end 
       \begin{itemize}
-        \item
-    index.jsp:
-              The html is rendered per response. There are various getServletContext requests to fill out the information to be updated, such as the message, the expiration time, and the address.
-              This is called every time there is a request, and it is sent through the requestDispatcher.
+        \item CS5300PROJ1index.jsp - The html is rendered per response. There are various getServletContext requests to fill out the information to be updated, such as the message, the expiration time, and the address. This is called every time there is a request, and it is sent through the requestDispatcher.
+        \item index.html - A blank placeholder for the workaround above.
+      \end{itemize}
 
   \end{description}
 
 \section{Concurrency}
-	          The session table is a concurrent hash map.
-            For all corresponding read/write to the hash map, there is synchronized (hashmap) surrounding the statements.
+  \begin{itemize}
+	  \item The session table is a concurrent hash map.
+    \item For all corresponding read/write to the hash map, there is synchronized (hashmap) surrounding the statements.
+  \end{itemize}
 
 Cheers, 
 Kevin, Horace, and Sweet
