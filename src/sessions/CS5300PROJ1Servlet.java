@@ -241,11 +241,22 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 					// if IPP local is either Primary or backup
 					if (cookieCrisp.equalsEitherLocation(myIPP)) {
 						session = sessionDataTable.get(cookieCrisp.getSessionID().toString());
-						if (session == null) { 
-							/*this can happen if you stop the servlet, clearing the
-						  concurrent hashmap, and then run it again -> Eclipse still has
-						  the cookie! Make a new cookie now!*/
-							break;
+						if (session == null || session.getVersion() < cookieCrisp.getVersion()) {
+							// If I'm the primary and there's a backup, try getting the session from the backup
+							if (cookieCrisp.getPrimaryIPP().equals(myIPP) && cookieCrisp.hasBackupIPP()) {
+								CS5300PROJ2RPCClient client = 
+										new CS5300PROJ2RPCClient(callID++, cookieCrisp, true, rpcServerObj.getLocalPort());
+								session = client.read();
+							} else { // If I'm the backup, try getting the session from the primary
+								CS5300PROJ2RPCClient client = 
+										new CS5300PROJ2RPCClient(callID++, cookieCrisp, false, rpcServerObj.getLocalPort());
+								session = client.read();
+							}
+							// Neither has the correct version, so make a new one
+							if (session == null) {
+								session = createSession();
+								session.setMessage("Sorry, your sessions do not exist anymore. Here's a new session");
+							}
 						}
 					} else {
 						// Send a READ request to the primary, then the backup for session object
