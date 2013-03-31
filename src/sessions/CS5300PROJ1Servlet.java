@@ -247,7 +247,7 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 								CS5300PROJ2RPCClient client = 
 										new CS5300PROJ2RPCClient(callID++, cookieCrisp, true, rpcServerObj.getLocalPort());
 								session = client.read();
-							} else { // If I'm the backup, try getting the session from the primary
+							} else if (cookieCrisp.hasBackupIPP()){ // If I'm the backup, try getting the session from the primary
 								CS5300PROJ2RPCClient client = 
 										new CS5300PROJ2RPCClient(callID++, cookieCrisp, false, rpcServerObj.getLocalPort());
 								session = client.read();

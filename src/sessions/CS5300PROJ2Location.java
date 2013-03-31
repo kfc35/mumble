@@ -76,6 +76,9 @@ public class CS5300PROJ2Location {
 	}
 
 	public boolean equalsPrimary(CS5300PROJ2IPP o) {
+		if (this.primaryIPP == null) {
+			return false;
+		}
 		return primaryIPP.equals(o);
 	}
 
