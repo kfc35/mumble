@@ -249,10 +249,22 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 								CS5300PROJ2RPCClient client = 
 										new CS5300PROJ2RPCClient(callID++, cookieCrisp, true, rpcServerObj.getLocalPort());
 								session = client.read();
+								synchronized (memberSet) {
+									if (client.getResponded()) { // If there's a response from the first
+
+										memberSet.put(client.getIppDest().toString(), client.getCallID());
+									}
+								}
 							} else if (cookieCrisp.hasBackupIPP()){ // If I'm the backup, try getting the session from the primary
 								CS5300PROJ2RPCClient client = 
 										new CS5300PROJ2RPCClient(callID++, cookieCrisp, false, rpcServerObj.getLocalPort());
 								session = client.read();
+								synchronized (memberSet) {
+									if (client.getResponded()) { // If there's a response from the first
+
+										memberSet.put(client.getIppDest().toString(), client.getCallID());
+									}
+								}
 							}
 							// Neither has the correct version, so make a new one
 							if (session == null) {
