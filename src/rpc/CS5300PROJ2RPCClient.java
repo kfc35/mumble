@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import sessions.CS5300PROJ1Servlet;
 import sessions.CS5300PROJ1Session;
 import sessions.CS5300PROJ2Cookie;
 import sessions.CS5300PROJ2IPP;
@@ -64,7 +65,7 @@ public class CS5300PROJ2RPCClient {
 			throws NumberFormatException, IOException {
 		CS5300PROJ2RPCMessage recv = sendAndReceive(
 				new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.D, callID, sessionID, version, port), false);
-		
+
 		if (recv == null) {
 			return false;
 		}
@@ -76,7 +77,9 @@ public class CS5300PROJ2RPCClient {
 		CS5300PROJ2RPCMessage recvM = null;
 
 		byte[] bytes = m.toBytes();
-
+		if (CS5300PROJ1Servlet.DEBUG) {
+			System.out.println("Sending message: " + m.toString()); 
+		}
 		DatagramPacket sendPacket = 
 				new DatagramPacket(bytes, 512, InetAddress.getByName(ippDest.getIP()), Integer.parseInt(ippDest.getPort()));
 		rpcSocket.send(sendPacket);
@@ -89,13 +92,14 @@ public class CS5300PROJ2RPCClient {
 				rpcSocket.receive(recvPacket);
 				responded = true;
 				String s = new String(inBuf, 0, 512, "UTF-8");
-				System.out.println("Gets the string from message: " + s);
+				if (CS5300PROJ1Servlet.DEBUG) {
+					System.out.println("Gets the string from message: " + s);
+				}
 				recvM = new CS5300PROJ2RPCMessage(s);
 			} while (recvM != null && recvM.getCallID() != m.getCallID());
 		} catch (InterruptedIOException iioe) {
 			recvM = null; // Set it back to a null
 		} catch (IOException ioe) {
-			//TODO what to do here?
 			recvM = null;
 		}
 		rpcSocket.close();
@@ -133,7 +137,7 @@ public class CS5300PROJ2RPCClient {
 	public void setVersion(int version) {
 		this.version = version;
 	}
-	
+
 	public boolean getResponded() {
 		return responded;
 	}

@@ -20,14 +20,16 @@ public class CS5300PROJ1Terminator implements Runnable {
 		while(true) {
 			try{
 				this.wait(1000 * 60*30); // Runs every 30 minutes TODO
-				System.out.println("Terminator check");
+				if (CS5300PROJ1Servlet.DEBUG) {
+					System.out.println("Terminator check");
+				}
 
 				// Synchronizes the sessionDataTable so that the access and removes don't conflict
 				synchronized (sessionDataTable) {
 					// For every entry in the hashtable, remove all expired sessions 
 					for (Entry<String, CS5300PROJ1Session> e: sessionDataTable.entrySet()) {
 						CS5300PROJ1Session session = e.getValue();
-						
+
 						if (session.getEnd() < System.currentTimeMillis()) {
 							if (CS5300PROJ1Servlet.DEBUG) {
 								System.out.println("Terminator removing the session: " 

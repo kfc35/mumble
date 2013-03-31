@@ -3,6 +3,7 @@ package rpc;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
+import sessions.CS5300PROJ1Servlet;
 import sessions.CS5300PROJ1Session;
 import sessions.CS5300PROJ2SessionId;
 
@@ -122,7 +123,9 @@ public class CS5300PROJ2RPCMessage {
 	 * for receive: R~W~callID~port~version
 	 */
 	public CS5300PROJ2RPCMessage(String m) {
-		System.out.println("Making a message out of: " + m);
+		if (CS5300PROJ1Servlet.DEBUG) {
+			System.out.println("Making a message out of: " + m);
+		}
 		String[] args = m.split("~", 8);
 		if (args.length < 5) 
 			return; // error case
@@ -200,12 +203,17 @@ public class CS5300PROJ2RPCMessage {
 				sb.append("~").append(version); //5
 			}
 		}
-		System.out.println("Message to string:" + sb.toString());
+		if (CS5300PROJ1Servlet.DEBUG) {
+			System.out.println("Message to string:" + sb.toString());
+		}
 		return sb.append("~").toString();
 	}
 
+
 	public byte[] toBytes() throws UnsupportedEncodingException {
-		System.out.println("bytes from string: " + toString());
+		if (CS5300PROJ1Servlet.DEBUG) {
+			System.out.println("bytes from string: " + toString());
+		}
 		byte[] msgBytes = this.toString().getBytes("UTF-8");
 		ByteBuffer bb = ByteBuffer.allocate(512);
 		bb.put(msgBytes, 0, (msgBytes.length <= 512 ? msgBytes.length : 512));

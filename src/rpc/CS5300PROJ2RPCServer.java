@@ -36,14 +36,14 @@ public class CS5300PROJ2RPCServer implements Runnable{
 			this.rpcSocket = null;
 		}
 	}
-	
+
 	public String getLocalPort() {
 		if (this.rpcSocket != null) {
 			return "" + this.rpcSocket.getLocalPort();
 		}
 		else return "";
 	}
-	
+
 	public String getLocalAddress() {
 		Enumeration<NetworkInterface> interfaces = null;
 		try {
@@ -53,27 +53,27 @@ public class CS5300PROJ2RPCServer implements Runnable{
 		}
 		if (interfaces == null) return "";
 		while (interfaces.hasMoreElements()){
-		    NetworkInterface current = interfaces.nextElement();
-		    try {
+			NetworkInterface current = interfaces.nextElement();
+			try {
 				if (!current.isUp() || current.isLoopback() || current.isVirtual()) continue;
 			} catch (SocketException e) {
 				e.printStackTrace();
 				continue;
 			}
-		    Enumeration<InetAddress> addresses = current.getInetAddresses();
-		    while (addresses.hasMoreElements()){
-		        InetAddress current_addr = addresses.nextElement();
-		        if (current_addr.isLoopbackAddress()) continue;
-		        if (current_addr instanceof Inet4Address) return current_addr.getHostAddress();
-		    }
+			Enumeration<InetAddress> addresses = current.getInetAddresses();
+			while (addresses.hasMoreElements()){
+				InetAddress current_addr = addresses.nextElement();
+				if (current_addr.isLoopbackAddress()) continue;
+				if (current_addr instanceof Inet4Address) return current_addr.getHostAddress();
+			}
 		}
 		return "";
 	}
-	
+
 	public boolean failed() {
 		return this.rpcSocket == null;
 	}
-	
+
 	@Override
 	public synchronized void run() {
 		while(!CS5300PROJ1Servlet.CRASH) {
@@ -99,52 +99,56 @@ public class CS5300PROJ2RPCServer implements Runnable{
 				// this should NEVER happen.
 				e1.printStackTrace();
 			}
-			System.out.println(msgString);
+			if (CS5300PROJ1Servlet.DEBUG) {
+				System.out.println(msgString);
+			}
 			CS5300PROJ2RPCMessage msg = new CS5300PROJ2RPCMessage(msgString);
 			CS5300PROJ2IPP recvIPP = new CS5300PROJ2IPP(returnAddr.getHostAddress(), msg.getPort());
-			System.out.println(recvIPP);
+			if (CS5300PROJ1Servlet.DEBUG) {
+				System.out.println(recvIPP);
+			}
 			CS5300PROJ2RPCMessage returnMsg = null;
 			switch (msg.getOpt()) {
-				case R:
-					CS5300PROJ1Session sess = null;
-					synchronized(sessionDataTable) {
-						sess = sessionDataTable.get(msg.getSessionID().toString());
+			case R:
+				CS5300PROJ1Session sess = null;
+				synchronized(sessionDataTable) {
+					sess = sessionDataTable.get(msg.getSessionID().toString());
+				}
+				if (sess == null) {
+					returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), -123, null, getLocalPort());
+				}
+				else {
+					returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), sess.getVersion(), sess, getLocalPort());
+				}
+				break;
+
+			case W:
+				synchronized(sessionDataTable) {
+					sessionDataTable.put(msg.getSession().getSessionID().toString(), msg.getSession());
+				}
+				CS5300PROJ2Location location = msg.getSession().getCookie().getLocation();
+				synchronized(memberSet) {
+					if (!memberSet.containsKey(location.getPrimaryIPP().toString()) && 
+							!location.getPrimaryIPP().equals(new CS5300PROJ2IPP(this.getLocalAddress(), this.getLocalPort()))) {
+						memberSet.put(location.getPrimaryIPP().toString(), -1);
 					}
-					if (sess == null) {
-						returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), -123, null, getLocalPort());
+					if (location.getBackupIPP() != null && !memberSet.containsKey(location.getBackupIPP().toString()) &&
+							!location.getBackupIPP().equals(new CS5300PROJ2IPP(this.getLocalAddress(), this.getLocalPort()))) {
+						memberSet.put(location.getBackupIPP().toString(), -1);
 					}
-					else {
-						returnMsg = new CS5300PROJ2RPCMessage(msg.getCallID(), sess.getVersion(), sess, getLocalPort());
-					}
-					break;
-					
-				case W:
-					synchronized(sessionDataTable) {
-						sessionDataTable.put(msg.getSession().getSessionID().toString(), msg.getSession());
-					}
-					CS5300PROJ2Location location = msg.getSession().getCookie().getLocation();
-					synchronized(memberSet) {
-						if (!memberSet.containsKey(location.getPrimaryIPP().toString()) && 
-								!location.getPrimaryIPP().equals(new CS5300PROJ2IPP(this.getLocalAddress(), this.getLocalPort()))) {
-							memberSet.put(location.getPrimaryIPP().toString(), -1);
-						}
-						if (location.getBackupIPP() != null && !memberSet.containsKey(location.getBackupIPP().toString()) &&
-								!location.getBackupIPP().equals(new CS5300PROJ2IPP(this.getLocalAddress(), this.getLocalPort()))) {
-							memberSet.put(location.getBackupIPP().toString(), -1);
-						}
-					}
-					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.W, msg.getCallID(), 1, getLocalPort());
-					break;
-					
-				case D:
-					synchronized(sessionDataTable) {
-						sessionDataTable.remove(msg.getSessionID().toString());
-					}
-					returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.D, msg.getCallID(), 1, getLocalPort());
-					break;
-				
-				default:
-					break;
+				}
+				returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.W, msg.getCallID(), 1, getLocalPort());
+				break;
+
+			case D:
+				synchronized(sessionDataTable) {
+					sessionDataTable.remove(msg.getSessionID().toString());
+				}
+				returnMsg = new CS5300PROJ2RPCMessage(CS5300PROJ2RPCMessage.OPT.D, msg.getCallID(), 1, getLocalPort());
+				break;
+
+			default:
+				break;
 			}
 			/*This synchronized block is down here to avoid deadlock
 			 * Our locks are ordered such that sessionDataTable is locked first */
@@ -164,7 +168,9 @@ public class CS5300PROJ2RPCServer implements Runnable{
 			if (returnMsg != null) {
 				byte[] bytes = null;
 				try {
-					System.out.println(returnMsg);
+					if (CS5300PROJ1Servlet.DEBUG) {
+						System.out.println(returnMsg);
+					}
 					bytes = returnMsg.toBytes();
 				} catch (UnsupportedEncodingException e) {
 					// this should NEVER happen.
