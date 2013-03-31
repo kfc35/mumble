@@ -400,8 +400,10 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 			getServletContext().setAttribute("address", request.getRemoteAddr() + "_" + request.getRemotePort());
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			getServletContext().setAttribute("myIPP", myIPP.toString());
-			CS5300PROJ2IPP originIPP = session.getCookie().getSessionID().getOriginIPP();
+			CS5300PROJ2IPP originIPP = session.getSessionID().getOriginIPP();
+			getServletContext().setAttribute("sessionNumber", session.getSessionID().getSessionNum());
 			getServletContext().setAttribute("sessionOrigin", originIPP.toString());
+			getServletContext().setAttribute("sessionVersion", session.getVersion());
 			CS5300PROJ2Location locations = session.getCookie().getLocation();
 			getServletContext().setAttribute("locations", locations.toString());
 			getServletContext().setAttribute("expires", dateFormat.format(new Date((new Date()).getTime() + (cookieToSend.getMaxAge() * 1000))));
