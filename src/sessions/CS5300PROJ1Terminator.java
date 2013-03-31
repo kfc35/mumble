@@ -19,7 +19,7 @@ public class CS5300PROJ1Terminator implements Runnable {
 	public synchronized void run() {
 		while(true) {
 			try{
-				this.wait(1000 * 60*30); // Runs every 30 minutes TODO
+				this.wait(1000 * 60 * 2); // Runs every 2
 				if (CS5300PROJ1Servlet.DEBUG) {
 					System.out.println("Terminator check");
 				}
