@@ -1,0 +1,130 @@
+\documentclass{article}
+\usepackage{framed}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{enumerate}
+\usepackage{tikz}
+\usepackage{soul}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usetikzlibrary{positioning}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
+\begin{document}
+
+%%% Framing my doc like the given assignment and solution
+\begin{framed}
+  \large{\textbf{Architecture of Large Scale Information-Systems  \hfill Assignment 3\\
+      CS 4820 Spring 2013 \hfill Horace Chan, Kevin Chen, Shihui Song \\
+      Monday, March 31, 2013 \hfill hhc39, kfc35, ss2249
+  }}
+\end{framed}
+
+\section{To run:}
+  \begin{description}
+    \item[On localhost:] Simply deploy the .war file into the tomcat7 webapps directory. To allow access from outside sources:
+      \begin{itemize}
+        \item Bypass the firewall for port 8080 TCP
+        \item For the server UDP port that is opened (You can determine this by going to http://localhost:8080/mumble and you'll see a a line ``This server's IPP port: IPxxx\_portNumber'', the 5-digit portNumber is the one you want), also bypass the firewall for this portNumber for UDP communications. Note that this may need to change everytime the app is started.
+      \end{itemize}
+    \item[On Elastic Beanstalk:] Add the .war file as a version into one of your environments. To allow communications with outside ports:
+      \begin{itemize}
+        \item Specify the security group for all ports %%% Kevin ADD TODO
+      \end{itemize}
+  \end{description}
+
+\section{Work-arounds for problems}
+  \begin{description}
+    \item[ss2249 could only use WebApps 2.5:]
+        This means that we could not use @WebServlet notation straight from the Servlet. For some reason, ss2249 could not upgrade to WebApps 3.0, so everybody downgraded. So web.xml was modified so that all requests will be directed to the Servlet, but that caused infinite recursion. Instead, the workaround is: create an empty index.html page in the home directory. Map all requests to that index.html page (which is all accesses to the home directory of mumble) to the Servlet. This works fine both locally and on Amazon Elastic Beanstalk.
+    \item[Everybody was using Java 1.7 instead of 1.6 (which is what the Amazon Elastic Beanstalk used):]
+        Our code depends on Java 1.7. There is a file named java7.config included in our WebContent's .ebextensions directory. This is a file is run automatically whenever the .war file is uploaded to Amazon Elastic BeanStalk. The file downloads java 1.7 and uses 1.7 instead of 1.6.\\
+  \end{description}
+
+\section{Code}
+  \begin{description}
+    \item[The java code] - is also separated into RPC code vs Session Code):
+      \begin{itemize}
+        \item \textbf{RPC:}
+          \begin{itemize}
+            \item \textbf{MESSAGE} - The message class is an object that represents what is going to be sent for RPC messages: Here is the composition of the various types of message:\\
+              \begin{itemize}
+                \item DELETE messages will have the form: 
+                  \begin{itemize}
+                    \item for send: S\textasciitilde{}D\textasciitilde{}callID\textasciitilde{}port\textasciitilde{}SID\textasciitilde{}version  
+                    \item for receive: R\textasciitilde{}callID\textasciitilde{}port\textasciitilde{}SID\textasciitilde{}version 
+                  \end{itemize}
+                \item READ messages will have the form: 
+                  \begin{itemize}
+                    \item for send: S\textasciitilde{}R\textasciitilde{}callID\textasciitilde{}port\textasciitilde{}SID\textasciitilde{}version 
+                    \item for receive: R\textasciitilde{}D\textasciitilde{}callID\textasciitilde{}port\textasciitilde{}session 
+                  \end{itemize}
+                \item WRITE messages will have the form: 
+                  \begin{itemize}
+                    \item for send: S\textasciitilde{}W\textasciitilde{}callID\textasciitilde{}port\textasciitilde{}session
+                    \item for receive: R\textasciitilde{}W\textasciitilde{}callID\textasciitilde{}port\textasciitilde{}version
+                  \end{itemize}
+                \item The notations above are:
+                  \begin{itemize}
+                    \item $S$ denotes a SEND message and $R$ denotes the RESPONSE (RECEIVE) of a SEND message.
+                    \item $D$ = DELETE, $R$ = READ, and $W$ = WRITE the type of message as the second variable in the message.
+                    \item $CallID$ is the unique message number. Each $callID$ of the response must match with the $callID$ of the send message.
+                    \item $port$ is the port number of the server so that the receiving server knows which port to send the response message to.
+                    \item $SID$ is the session id that is searched for. $SessionID$ is comprise of \emph{sessionNumber\textasciitilde{}SessionOriginIPP}. $SessionNumber$ is the number of sessions that have started at that $SessionOriginIPP$ and $SessionOriginIPP$ is comprised of the \emph{Address\_PortNumber}.
+                    \item $session$ is the complete session information that is to be written.
+                  \end{itemize}
+              The message is serialized to 512 bytes and de-serialized when a message is received.
+              \end{itemize}
+            \item \textbf{CLIENT}:
+              \begin{itemize} 
+                \item Whenever a message is to be sent, a client is created. This client has the destination IPP, the message, and it has three main methods (read, write, and delete). 
+                \item It'll send a message to the destination and wait for a response. If it times out or other exceptions, it'll assume that the destination is offline and delete from the memberSet. If it receives a message, it'll add the destination to the memberSet (note that in Java ConcurrentHashMaps, a removal of a non-exitent item does not throw an error and a put of an existing item simply overwrites the old version). 
+                \item Every message sent must have a corresponding callID back.
+              \end{itemize}
+            \item \textbf{SERVER}:%%%TODO KEVIN ADD
+          \end{itemize}
+        \item \textbf{Session:}
+          \begin{itemize}
+            \item \textbf{TERMINATOR} (this code is unchanged from part a)
+              \begin{itemize}
+                \item A thread that removes expired session from the concurrent hashmap table of sessions. 
+                \item This runs every 2 minutes, as every cookie expires in 2 minutes. 
+                \item Every SERVLET owns its own terminator, and it is synchronized.
+              \end{itemize}
+            \item \textbf{SERVLET:}
+              \begin{itemize}
+                \item The main instance and logic for this project, it is called in both GET and POST instances. GET is for first time access and refresh, which we determined were very similar. POST is for Log out and Replace. It is also for the crash function.
+              \end{itemize}
+                \item There's a concurrent hash map for the sessions. We chose this over a priority queue because we believed it better to be better for lookups. 
+                \item The sessionId is UUID (in the future with multiple servlets, the sessionID will be also include the servlet number, which is simply zero in this case). The version number and the location metadata are so far ignored in this project.  
+                \item The cookies passed to the client is a regular java cookie with the value as the class name of CS5300PROJ1SESSION and the value as the sessionId, the version number, and the location. In the case of Log out, a max age of 0 is sent.
+                \item The code is divided into many sub-functions that prevent repetitive code. The main difference that we've found is the different actions on what to do if a session is found. This is resolved with enums. 
+            \item \textbf{SESSION:}
+              \begin{itemize}
+                \item   In addition to its inherent values as a cookie, it also has a string sessionId, a string message, location, and a long end (expiration time). 
+              \end{itemize}
+          \end{itemize}    
+      \end{itemize}
+    \item[The HTML] - renders the front-end 
+      \begin{itemize}
+        \item
+    index.jsp:
+              The html is rendered per response. There are various getServletContext requests to fill out the information to be updated, such as the message, the expiration time, and the address.
+              This is called every time there is a request, and it is sent through the requestDispatcher.
+
+  \end{description}
+
+\section{Concurrency}
+	          The session table is a concurrent hash map.
+            For all corresponding read/write to the hash map, there is synchronized (hashmap) surrounding the statements.
+
+Cheers, 
+Kevin, Horace, and Sweet
+\end{document}

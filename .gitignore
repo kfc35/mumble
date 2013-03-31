@@ -6,3 +6,6 @@ bin/*
 *.class
 src/AwsCredentials.properties
 WebContent/WEB-INF/classes/
+README.log
+README.aux
+README.out
