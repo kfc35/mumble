@@ -346,13 +346,15 @@ public class CS5300PROJ1Servlet extends HttpServlet {
 				for (Entry<String, Integer> entry: memberSet.entrySet()) {
 					CS5300PROJ2IPP ipp = new CS5300PROJ2IPP(entry.getKey());
 					session.setBackupIPP(ipp);
-					CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
-					session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
-					if (client.write(session, session.getEnd())) {
-						sessionDataTable.put(session.getSessionID().toString(), session);
-						return session;
+					if (session.getCookie().hasBackupIPP()) {
+						CS5300PROJ2RPCClient client = new CS5300PROJ2RPCClient(callID++, session.getCookie(), false, rpcServerObj.getLocalPort());
+						session.setEnd((new Date()).getTime() + DISCARD_TIME_FROM_CURRENT);
+						if (client.write(session, session.getEnd())) {
+							sessionDataTable.put(session.getSessionID().toString(), session);
+							return session;
+						}
+						memberSet.remove(ipp.toString());
 					}
-					memberSet.remove(ipp.toString());
 				}
 			}
 		}
