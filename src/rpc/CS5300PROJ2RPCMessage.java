@@ -36,7 +36,7 @@ public class CS5300PROJ2RPCMessage {
 	private String port;
 	private CS5300PROJ1Session session;
 
-	public static int RPC_TIMEOUT = 10000; //TODO was originally 3000
+	public static int RPC_TIMEOUT = 10000; //10 seconds
 
 
 	/**

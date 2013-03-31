@@ -11,6 +11,7 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{hyperref}
 
 \usetikzlibrary{positioning}
 
@@ -34,9 +35,9 @@
         \item Bypass the firewall for port 8080 TCP
         \item For the server UDP port that is opened (You can determine this by going to http://localhost:8080/mumble and you'll see a a line ``This server's IPP port: IPxxx\_portNumber'', the 5-digit portNumber is the one you want), also bypass the firewall for this portNumber for UDP communications. Note that this may need to change everytime the app is started.
       \end{itemize}
-    \item[On Elastic Beanstalk:] Add the .war file as a version into one of your environments. To allow communications with outside ports:
+    \item[On Elastic Beanstalk:] Add the .war file as a version into one of your environments. To allow communications among the instances within the environment:
       \begin{itemize}
-        \item Specify the security group for all ports %%% Kevin ADD TODO
+        \item Specify the Elastic Beanstalk security group to accept ALL UDP ports (changeable in the AWS Management Console $\to$ EC2 $\to$ Security Groups)
       \end{itemize}
   \end{description}
 
@@ -80,7 +81,8 @@
                     \item $SID$ is the session id that is searched for. $SessionID$ is comprise of \emph{sessionNumber\textasciitilde{}SessionOriginIPP}. $SessionNumber$ is the number of sessions that have started at that $SessionOriginIPP$ and $SessionOriginIPP$ is comprised of the \emph{Address\_PortNumber}.
                     \item $session$ is the complete session information that is to be written.
                   \end{itemize}
-              The message is serialized to 512 bytes and de-serialized when a message is received.
+		\item The message is serialized to 512 bytes and de-serialized when a message is received.
+		\item Our Timeout between RPC Messages is defined here in this file to be 10 seconds.
               \end{itemize}
             \item \textbf{CLIENT}:
               \begin{itemize} 
@@ -88,7 +90,18 @@
                 \item It'll send a message to the destination and wait for a response. If it times out or other exceptions, it'll assume that the destination is offline and delete from the memberSet. If it receives a message, it'll add the destination to the memberSet (note that in Java ConcurrentHashMaps, a removal of a non-exitent item does not throw an error and a put of an existing item simply overwrites the old version). 
                 \item Every message sent must have a corresponding callID back.
               \end{itemize}
-            \item \textbf{SERVER}:%%%TODO KEVIN ADD
+            \item \textbf{SERVER}:
+		\begin{itemize}
+		  \item The RPC Server is created upon servlet creation, and persists throughout the servlet's lifetime.
+		  \item It runs in a separate thread apart from the Servlet, but accesses both the Session Data Table and the Member Set.
+		  \item The servlet's IPP is created by concatenating the servlet's external IP address (which cannot be found from the RPC Server Datagram Socket function getLocalAddress. We used a \href{http://stackoverflow.com/questions/8765578/get-local-ip-address-without-connecting-to-the-internet}{Stack overflow solution} to deal with this.) with the port number assigned to the RPC Server socket.
+		  \item The RPC Server code is straightforward, mostly taken from the project description. It accepts RPC Client requests from other servlets, and responds according to protocol. The only changes come from:
+		    \begin{itemize}
+			\item Implementing Crash: The RPC Server code can potentially exit before and after receiving a message, as well as before sending a message.
+			\item Member set management: In the cases of writes, the primary and backup IPP of the session to be written are added to the member set (provided they aren't null and not equal to yourself). We also add the RPC Client's IPP to the member set.
+		    \end{itemize}
+		  \item Client requests with a call ID less than a previously seen call ID from them are not responded to nor change the state of the server, because this means the request may be old.
+		\end{itemize}
           \end{itemize}
         \item \textbf{Session:}
           \begin{itemize}
@@ -102,14 +115,32 @@
               \begin{itemize}
                 \item The main instance and logic for this project, it is called in both GET and POST instances. GET is for first time access and refresh, which we determined were very similar. POST is for Log out and Replace. It is also for the crash function.
               \end{itemize}
-                \item There's a concurrent hash map for the sessions. We chose this over a priority queue because we believed it better to be better for lookups. 
-                \item The sessionId is UUID (in the future with multiple servlets, the sessionID will be also include the servlet number, which is simply zero in this case). The version number and the location metadata are so far ignored in this project.  
-                \item The cookies passed to the client is a regular java cookie with the value as the class name of CS5300PROJ1SESSION and the value as the sessionId, the version number, and the location. In the case of Log out, a max age of 0 is sent.
+		\item When there is a crash, doGet and doPost methods both immediately return. A flag is also turned so that the RPC Server knows to exit its loop of servicing RPC requests.
+                \item There is a concurrent hash map for the sessions. We chose this over a priority queue because we believed it better to be better for lookups. 
+		\item There is a concurrent hash map for the member set. We chose this because we need to keep track of whether an older messages is being sent to the RPC Server because of delays in the network.
+                \item The cookies passed to the client is a regular Java cookie with the name  CS5300PROJ2 and the value as the sessionId, version, and the location. In the case of Log out, a max age of 0 is sent.
                 \item The code is divided into many sub-functions that prevent repetitive code. The main difference that we've found is the different actions on what to do if a session is found. This is resolved with enums. 
+		\item At the end of every doGet and doPost, many attributes in the Servlet Context are set so that information can be sent to our main jsp page.
             \item \textbf{SESSION:}
               \begin{itemize}
-                \item   In addition to its inherent values as a cookie, it also has a string sessionId, a string message, location, and a long end (expiration time). 
+                 \item   In addition to its inherent values as a cookie, it also has a string sessionId, a string message, location, and a long end (expiration time). 
               \end{itemize}
+	    \item \textbf{IPP:}
+		\begin{itemize}
+		   \item A basic object that contains the String IP and String Port.
+		\end{itemize}
+	    \item \textbf{Location:}
+		\begin{itemize}
+		  \item A basic object that contains 2 IPP's: One for the primary IPP, which is NEVER null, and the other for the backup IPP, which may or may not be null.
+		\end{itemize}
+	    \item \textbf{SessionId:}
+		\begin{itemize}
+		  \item A basic object that includes a session number and the IPP at which this session originated from.
+		\end{itemize}
+	    \item \textbf{Cookie:}
+		\begin {itemize}
+		  \item A basic object that extends Cookie. It includes the session ID, the version number, and the location of the session information.
+		\end {itemize}
           \end{itemize}    
       \end{itemize}
     \item[The HTML] - renders the front-end 
@@ -122,8 +153,10 @@
 
 \section{Concurrency}
   \begin{itemize}
-	  \item The session table is a concurrent hash map.
+    \item The session table is a concurrent hash map.
+    \item The member set is also a concurrent hash map, as it can be accessed by both the servlet and the RPC Server.
     \item For all corresponding read/write to the hash map, there is synchronized (hashmap) surrounding the statements.
+    \item We agreed on an ordering of the objects to prevent deadlock: the session table must be locked first before the member set is ever locked.
   \end{itemize}
 
 Cheers, 
